@@ -19,7 +19,7 @@ export const fruit = [
     {
         path: '/example',
         component: Layout,
-        redirect: '/example/bar',
+        // redirect: '/example/bar',
         children: [
             {
                 path: "/bar",
