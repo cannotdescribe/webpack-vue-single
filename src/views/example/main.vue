@@ -1,9 +1,8 @@
 <template>
-   <div></div>
+    <div>main</div>
 </template>
-
 <script>
     export default {
+        name: "main"
     }
 </script>
-
