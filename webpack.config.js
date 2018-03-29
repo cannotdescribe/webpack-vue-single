@@ -41,12 +41,11 @@ var config = {
             {
                 test: /\.css$/,
                 use: [
-                    "style-loader",
-                    "css-loader"
+                    "style-loader","css-loader"
                 ]
             },
             {
-                test: /\.styl$/,
+                test: /\.(styl|less)$/,
                 use: [
                     "style-loader",
                     "css-loader",
@@ -60,7 +59,17 @@ var config = {
                 ]
             },
             {
-                test: /\.(gif|jpg|jpeg|png|svg)$/,
+                test: /\.scss$/,
+                use: [{
+                        loader: "style-loader" // creates style nodes from JS strings
+                    }, {
+                        loader: "css-loader" // translates CSS into CommonJS
+                    }, {
+                        loader: "sass-loader" // compiles Sass to CSS
+                }]
+            },
+            {
+                test: /\.(gif|jpg|jpeg|png|svg|woff2?|eot|ttf|otf)$/,
                 use: [
                     {
                         loader: "url-loader",
