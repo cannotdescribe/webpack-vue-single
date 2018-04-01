@@ -23,4 +23,7 @@
 //            }
         }
     }
+    let va ={a:1, b:2, c:3};
+    let {a, ...z} = va;
+    console.log(a, z);
 </script>

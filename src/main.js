@@ -1,8 +1,10 @@
 // import fruit from "../router"
+import Vue from "vue"
+
+import 'normalize.css/normalize.css'
 
 import router from "./router"
 import App from './App'
-import Vue from "vue"
 import Element from 'element-ui'
 
 import 'element-ui/lib/theme-chalk/index.css'
