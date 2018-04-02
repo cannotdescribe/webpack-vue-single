@@ -10,14 +10,14 @@
 </template>
 
 <script>
-import { Navbar, Sidebar, AppMain, TagsView } from './components'
+import { Navbar, Sidebar, TagsView,AppMain } from './components'
 export default {
   name: 'layout',
   components: {
-    Navbar,
-    Sidebar,
-    AppMain,
-    TagsView
+      Navbar,
+      Sidebar,
+      TagsView,
+      AppMain
   }
 }
 </script>

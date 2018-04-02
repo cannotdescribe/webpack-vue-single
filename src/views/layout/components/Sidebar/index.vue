@@ -7,23 +7,26 @@
 </template>
 
 <script>
-//    import { mapGetters } from 'vuex'
+    import { mapGetters } from 'vuex'
 //    import SidebarItem from './SidebarItem'
     import ScrollBar from '@/components/ScrollBar'
 
     export default {
         components: {  ScrollBar },
         computed: {
-//            ...mapGetters([
-//                'permission_routers',
-//                'sidebar'
-//            ]),
+            ...mapGetters([
+                'permission_routers',
+            ])
 //            isCollapse() {
 //                return !this.sidebar.opened
 //            }
         }
     }
-    let va ={a:1, b:2, c:3};
-    let {a, ...z} = va;
-    console.log(a, z);
+    var a1 = {
+        a:1,
+        b:2,
+        c:3
+    };
+    var a2 = {z:1, ...a1, n:12}
+    console.log(a2);
 </script>
