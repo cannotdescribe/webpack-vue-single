@@ -18,7 +18,12 @@ export default {
       Sidebar,
       TagsView,
       AppMain
-  }
+  },
+    computed: {
+        sidebar() {
+            return "sidebar";
+        }
+    }
 }
 </script>
 

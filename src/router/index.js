@@ -12,27 +12,39 @@ Vue.use(Router);
 
 // console.log(Bar)
 // console.log(Foo)
+
+
 export const fruit = [
     {
         path: '',
         component: Layout,
         redirect: '/example',
+        hidden: true
     },
     {
         path: '/example',
         component: Layout,
         redirect: '/example/bar',
+        meta: {
+            title: "example"
+        },
         children: [
             {
                 //子路径不需要'/' 真是叫人匪夷所思
                 path: "bar",
                 component: bar,
-                hidden: true
+                hidden: true,
+                meta: {
+                    title: "bar"
+                },
             },
             {
                 path: "foo",
                 component: foo,
-                hidden: true
+                hidden: true,
+                meta: {
+                    title: "foo"
+                },
             },
         ]
     }
