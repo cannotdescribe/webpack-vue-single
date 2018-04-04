@@ -5,6 +5,11 @@ const app={
             opened: Cookies.get("sidebarStatus")
         }
     },
+    getter:{
+        sidebar(state){
+            return state.sidebar;
+        }
+    },
     mutations: {
         TOGGLE_SIDEBAR: state =>{
             if (state.sidebar.opened) {
@@ -18,6 +23,9 @@ const app={
     actions: {
         toggleSidebar(context){
             context.commit("TOGGLE_SIDEBAR");
+        },
+        actionDemo01(context){
+            console.log("app: actionDemo01");
         }
     }
 };

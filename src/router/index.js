@@ -16,12 +16,20 @@ Vue.use(Router);
 // console.log(Foo)
 
 
-export const fruit = [
+export const constantRouterMap = [
     {
         path: '/login',
-        hidden: true,
+        // hidden: true,
         component: login
-    },
+    }
+];
+
+export default new Router({
+    // scrollBehavior: () => ({ y: 0 }),
+    routes: constantRouterMap
+})
+
+export const asyncRouterMap = [
     {
         path: '',
         component: Layout,
@@ -55,14 +63,4 @@ export const fruit = [
             },
         ]
     }
-];
-export default new Router({
-    // scrollBehavior: () => ({ y: 0 }),
-    routes: fruit
-})
-
-export const defaultPages = [{
-    path: 'login',
-    hidden: true,
-    component: login
-}]
+]
