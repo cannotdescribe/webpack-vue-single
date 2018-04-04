@@ -7,6 +7,8 @@ import Router from 'vue-router'
 import Layout from '../views/layout/Layout.vue'
 
 import Vue from 'vue'
+
+import login from "@/views/login/index"
 //Vue在使用外接插件是，需要 Vue.use();
 Vue.use(Router);
 
@@ -15,6 +17,11 @@ Vue.use(Router);
 
 
 export const fruit = [
+    {
+        path: '/login',
+        hidden: true,
+        component: login
+    },
     {
         path: '',
         component: Layout,
@@ -53,3 +60,9 @@ export default new Router({
     // scrollBehavior: () => ({ y: 0 }),
     routes: fruit
 })
+
+export const defaultPages = [{
+    path: 'login',
+    hidden: true,
+    component: login
+}]
