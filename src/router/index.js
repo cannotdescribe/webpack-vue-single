@@ -19,8 +19,8 @@ Vue.use(Router);
 export const constantRouterMap = [
     {
         path: '',
-        // hidden: true,
-        redirect: '/login'
+        redirect: '/login',
+        hidden: true
     },
     {
         path: '/login',
@@ -30,17 +30,17 @@ export const constantRouterMap = [
 ];
 
 export default new Router({
-    // scrollBehavior: () => ({ y: 0 }),
+    scrollBehavior: () => ({ y: 0 }),
     routes: constantRouterMap
 })
 
 export const asyncRouterMap = [
-    {
-        path: '',
-        component: Layout,
-        redirect: '/example',
-        hidden: true
-    },
+    // {
+    //     path: '',
+    //     component: Layout,
+    //     redirect: '/example',
+    //     hidden: true
+    // },
     {
         path: '/example',
         component: Layout,
