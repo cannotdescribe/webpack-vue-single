@@ -8,7 +8,7 @@ import Layout from '../views/layout/Layout.vue'
 
 import Vue from 'vue'
 
-import login from "@/views/login/index"
+import login from "@/views/login/index.vue"
 //Vue在使用外接插件是，需要 Vue.use();
 Vue.use(Router);
 
@@ -17,6 +17,11 @@ Vue.use(Router);
 
 
 export const constantRouterMap = [
+    {
+        path: '',
+        // hidden: true,
+        redirect: '/login'
+    },
     {
         path: '/login',
         // hidden: true,

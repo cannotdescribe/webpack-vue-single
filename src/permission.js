@@ -1,10 +1,10 @@
 import router from './router'
+import store from './store'
 
 router.beforeEach((to, form, next)=>{
-    // store.dispatch("actionDemo01");
-    // console.log(store.state.app.sidebar);
-    // store.state.app.dispatch("actionDemo01");
-    // store.dispatch("actionDemo01");
-    // console.log("result:", store.state.permission.demo01);
-
+    console.log("beforeEach");
+    store.dispatch("GenerateRoutes").then(()=>{
+        router.addRoutes(store.getters.addRouters);
+    }).catch(()=>{
+    })
 });
