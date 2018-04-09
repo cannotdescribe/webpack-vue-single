@@ -14,7 +14,6 @@ const permission = {
   actions: {
       GenerateRoutes({ commit }, data) {
           return new Promise(resolve => {
-              console.log(asyncRouterMap);
               commit('SET_ROUTERS', asyncRouterMap)
               resolve()
           });

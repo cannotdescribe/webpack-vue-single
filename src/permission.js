@@ -3,10 +3,15 @@ import store from './store'
 
 router.beforeEach((to, form, next)=>{
     console.log("beforeEach");
-    store.dispatch("GenerateRoutes").then(()=>{
-        router.addRoutes(store.getters.addRouters);
+    if (store.getters.addRouters.length === 0) {
+        store.dispatch("GenerateRoutes").then(()=>{
+            console.log(store.getters.addRouters);
+            router.addRoutes(store.getters.addRouters);
+            next()
+        }).catch(()=>{
+            next();
+        })
+    }else{
         next();
-    }).catch(()=>{
-        next();
-    })
+    }
 });
