@@ -42,7 +42,7 @@ export const asyncRouterMap = [
                 //子路径不需要'/' 真是叫人匪夷所思
                 path: "bar",
                 component: bar,
-                hidden: true,
+                // hidden: true,
                 meta: {
                     title: "bar"
                 },
@@ -50,7 +50,7 @@ export const asyncRouterMap = [
             {
                 path: "foo",
                 component: foo,
-                hidden: true,
+                // hidden: true,
                 meta: {
                     title: "foo"
                 },

@@ -47,7 +47,7 @@
                 this.$refs[formName].validate((valid)=>{
                     if(valid){
                         console.log("有效");
-
+                        this.$router.push({ path: '/example' })
                     }else{
                         console.log("失效");
                     }
