@@ -2,14 +2,12 @@ import router from './router'
 import store from './store'
 
 router.beforeEach((to, form, next)=>{
-    console.log("beforeEach");
     if (store.getters.addRouters.length === 0) {
         store.dispatch("GenerateRoutes").then(()=>{
-            console.log(store.getters.addRouters);
             router.addRoutes(store.getters.addRouters);
-            next()
+            next({ ...to, replace: true })
         }).catch(()=>{
-            next();
+            next({ path: '/login' });
         })
     }else{
         next();

@@ -8,14 +8,14 @@
             </div>
 
             <el-form-item label="账号" prop="username">
-                <el-input v-model="form.username" placeholder="账号"></el-input>
+                <el-input v-model="form.username" placeholder="请输入账号"></el-input>
             </el-form-item>
             <el-form-item label="密码" prop="password">
                 <el-input v-model="form.password" type="password" placeholder="请输入密码"></el-input>
             </el-form-item>
 
             <el-form-item>
-                <el-button type="primary" @click="onSubmit('form')">立即创建</el-button>
+                <el-button type="primary" @click="onSubmit('form')">登录</el-button>
                 <el-button>取消</el-button>
             </el-form-item>
         </el-form>
@@ -47,7 +47,7 @@
                 this.$refs[formName].validate((valid)=>{
                     if(valid){
                         console.log("有效");
-                        this.$router.push({ path: '/example' })
+                        this.$router.push({ path: '/deploy/index' })
                     }else{
                         console.log("失效");
                     }

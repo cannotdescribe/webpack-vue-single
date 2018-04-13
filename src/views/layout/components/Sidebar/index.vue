@@ -9,7 +9,6 @@
             <sidebar-item :routes="permission_routers"></sidebar-item>
 
         </el-menu>
-
     </scroll-bar>
 </template>
 
@@ -19,7 +18,7 @@
     import ScrollBar from '@/components/ScrollBar'
 
     export default {
-        components: {  ScrollBar, SidebarItem },
+        components: { SidebarItem, ScrollBar },
         computed: {
             ...mapGetters([
                 'permission_routers',
