@@ -41,4 +41,8 @@ export default {
       margin:0;
       padding:0;
   }
+  .el-container{
+      height: 100%;
+      overflow: hidden;
+  }
 </style>

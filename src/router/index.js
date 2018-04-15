@@ -40,10 +40,19 @@ export const asyncRouterMap = [
     {
         path: '/monitor',
         component: Layout,
+        redirect: '/monitor/index',
         meta: {
             title: "监控"
         },
-        childType: "none"
+        childType: "none",
+        children: [
+            {
+                //子路径不需要'/' 真是叫人匪夷所思
+                path: "index",
+                component: _import("monitor/Monitor"),
+                hidden: true
+            }
+        ]
     },
 
     {
@@ -56,21 +65,30 @@ export const asyncRouterMap = [
         },
         children: [
             {
-                //子路径不需要'/' 真是叫人匪夷所思
                 path: "realtime",
-                component: bar,
-                // hidden: true,
+                component: _import("video/Video"),
+                redirect: '/video/realtime/index',
                 meta: {
                     title: "实时视频"
                 },
+                children:[{
+                    path: "index",
+                    hidden: true,
+                    component: _import("video/realtime/index"),
+                }]
             },
             {
                 path: "history",
-                component: foo,
-                // hidden: true,
+                component: _import("video/Video"),
+                redirect: '/video/history/index',
                 meta: {
                     title: "历史视频"
                 },
+                children:[{
+                    path: "index",
+                    hidden: true,
+                    component: _import("video/history/index"),
+                }]
             },
         ]
     },
