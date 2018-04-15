@@ -2,7 +2,7 @@ import Cookies from 'js-cookie'
 const app={
     state : {
         sidebar: {
-            opened: Cookies.get("sidebarStatus")
+            opened: !+Cookies.get("sidebarStatus")
         }
     },
     getter:{
@@ -21,7 +21,7 @@ const app={
         }
     },
     actions: {
-        toggleSidebar(context){
+        toggleSideBar(context){
             context.commit("TOGGLE_SIDEBAR");
         },
         actionDemo01(context){

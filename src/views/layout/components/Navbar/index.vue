@@ -1,10 +1,11 @@
 <template>
 
-    <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" @select="handleSelect">
+    <el-menu  :default-active="activeIndex" router class="el-menu-demo" mode="horizontal" @select="handleSelect">
         <LOGO></LOGO>
 
         <template v-for="(item, index) in navMenu">
             <nav-item v-if="item.childType==='navigate'" :index="item.path" :item="item"></nav-item>
+
             <el-menu-item v-else :index="item.path">{{item.meta.title}}</el-menu-item>
         </template>
 
@@ -28,7 +29,11 @@
     </el-menu>
 
 </template>
-
+<style>
+    .el-menu-item{
+        /*width: 180px;*/
+    }
+</style>
 <script>
     import LOGO from "./Logo";
     import RightMenu from "./RightMenu"
@@ -49,7 +54,7 @@
         },
         methods: {
             handleSelect(key, keyPath) {
-                console.log(key, keyPath);
+//                console.log(key, keyPath);
             }
         },
         computed: {
@@ -58,7 +63,7 @@
                 'addRouters'
             ]),
             navMenu(){
-                console.log(this.addRouters.filter(item=>!item.hidden));
+//                console.log(this.addRouters.filter(item=>!item.hidden));
                 return this.addRouters.filter(item=>!item.hidden)
             }
         }

@@ -5,13 +5,13 @@
 
         <template v-if="item.childType==='navigate'" >
             <template v-for="(value, key) in item.children">
-                <el-menu-item :index="index.concat('/').concat(item.path)" :item="value">{{value.meta.title}}</el-menu-item>
+                <el-menu-item :index="index.concat('/').concat(value.path)" :item="value">{{value.meta.title}}</el-menu-item>
             </template>
         </template>
 
         <template v-else >
             <template v-for="(value, key) in item.children">
-                <nav-item :index="index.concat('/').concat(item.path)" :item="value"></nav-item>
+                <nav-item :index="index.concat('/').concat(value.path)" :item="value"></nav-item>
             </template>
         </template>
     </el-submenu>

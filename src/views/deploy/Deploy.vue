@@ -1,7 +1,7 @@
 <template>
     <el-container>
-        <el-aside>
-            <sidebar class="sidebar-container"></sidebar>
+        <el-aside style="width: 180px;">
+            <sidebar class="sidebar-container" :currentPath="currentPath()"></sidebar>
         </el-aside>
         <el-container>
             <el-main>
@@ -14,8 +14,9 @@
 
 <script>
     import { Sidebar, TagsView, AppMain } from '../layout/components'
+
     export default {
-        name: 'layout',
+        name: 'deploy',
         components: {
             Sidebar,
             TagsView,
@@ -24,6 +25,11 @@
         computed: {
             sidebar() {
                 return "sidebar";
+            }
+        },
+        methods: {
+            currentPath(){
+                return "dads";
             }
         }
     }
@@ -37,6 +43,10 @@
         color: #333;
         /*text-align: center;*/
         line-height: 60px;
+        margin:0;
+        padding:0;
+    }
+    .el-main{
         margin:0;
         padding:0;
     }

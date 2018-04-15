@@ -13,6 +13,7 @@ import i18n from './lang'
 import 'element-ui/lib/theme-chalk/index.css'
 import '@/styles/index.scss'
 import './permission'
+import './mock'
 
 Vue.use(Element, {
     size: 'medium' // set element-ui default size
