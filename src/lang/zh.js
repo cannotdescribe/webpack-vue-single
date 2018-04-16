@@ -46,7 +46,9 @@ export default {
     exportZip: 'Export Zip',
     theme: '换肤',
     clipboardDemo: 'Clipboard',
-    i18n: '国际化'
+    i18n: '国际化',
+    bar:'bar',
+    foo:'foo'
   },
   navbar: {
     logOut: '退出登录',
@@ -58,8 +60,15 @@ export default {
   login: {
     title: '系统登录',
     logIn: '登录',
-    username: '账号',
+    username: '用户名',
     password: '密码',
+    username_placeholder:'请输入用户名',
+    password_placeholder:'请输入密码',
+    username_error1:'请输入用户名！',
+    username_error2:'用户名长度在5位到25位之间',
+    password_error1:'请输入密码！',
+    password_error2:'密码长度在5位到25位之间',
+    login_error:'用户名或密码错误！',
     any: '随便填',
     thirdparty: '第三方登录',
     thirdpartyTips: '本地不能模拟，请结合自己业务进行模拟！！！'

@@ -29,5 +29,8 @@ export default {
             ),
             total: count
         };
+    },
+    userLogin: ()=>{
+        return {};
     }
 }

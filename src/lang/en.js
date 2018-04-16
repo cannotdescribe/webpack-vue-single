@@ -46,7 +46,9 @@ export default {
     exportZip: 'Export Zip',
     theme: 'Theme',
     clipboardDemo: 'Clipboard',
-    i18n: 'I18n'
+    i18n: 'I18n',
+    bar:'bar',
+    foo:'foo'
   },
   navbar: {
     logOut: 'Log Out',
@@ -60,6 +62,13 @@ export default {
     logIn: 'Log in',
     username: 'Username',
     password: 'Password',
+    username_placeholder:'Please enter username',
+    password_placeholder:'Please enter password',
+    username_error1:'Please enter username!',
+    username_error2:'Username can not be less than 5 digits and more than 25 digits',
+    password_error1:'Please enter password!',
+    password_error2:'Password can not be less than 5 digits and more than 25 digits',
+    login_error:'Username or password is incorrect, please check and try again',
     any: 'any',
     thirdparty: 'Or connect with',
     thirdpartyTips: 'Can not be simulated on local, so please combine you own business simulation! ! !'
