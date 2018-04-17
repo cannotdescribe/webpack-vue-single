@@ -30,6 +30,9 @@
 
 </template>
 <style>
+    .el-menu{
+        /*box-sizing: border-box;*/
+    }
     .el-menu-item{
         /*width: 180px;*/
     }

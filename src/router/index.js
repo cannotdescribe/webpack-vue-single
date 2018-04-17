@@ -12,6 +12,8 @@ import login from "@/views/login/index.vue"
 import monitor from "@/views/monitor/Monitor.vue"
 import deploy from "@/views/deploy/Deploy.vue"
 
+import history from "@/views/history/History.vue"
+
 const _import = require('./_import_' + process.env.NODE_ENV)
 
 
@@ -45,12 +47,32 @@ export const asyncRouterMap = [
             title: "监控"
         },
         childType: "none",
-        children: [
+        children:[
             {
-                //子路径不需要'/' 真是叫人匪夷所思
-                path: "index",
+                path: "",
                 component: _import("monitor/Monitor"),
-                hidden: true
+                hidden: true,
+                children:[{
+                    path: "center",
+                    component: _import("monitor/childrenPage/center"),
+                    hidden: true
+                },{
+                    path: "station",
+                    component: _import("monitor/childrenPage/station"),
+                    hidden: true
+                },{
+                    path: "room",
+                    component: _import("monitor/childrenPage/room"),
+                    hidden: true
+                },{
+                    path: "device",
+                    component: _import("monitor/childrenPage/device"),
+                    hidden: true
+                },{
+                    path: "code",
+                    component: _import("monitor/childrenPage/code"),
+                    hidden: true
+                }]
             }
         ]
     },
@@ -102,15 +124,6 @@ export const asyncRouterMap = [
             title: "配置"
         },
         children: [
-            // {
-            //     path: "index",
-            //     component: deploy,
-            //     hidden: true,
-            //     redirect: '/deploy/userConfig',
-            //     meta: {
-            //         title: "index"
-            //     }
-            // },
             {
                 path: "userConfig",
                 component: deploy,
@@ -155,6 +168,52 @@ export const asyncRouterMap = [
                         component: _import("deploy/devConfig/code"),
                         meta: {
                             title: "点位管理"
+                        }
+                    }
+                ]
+            }
+        ]
+    },
+
+    {
+        path: '/history',
+        component: Layout,
+        redirect: '/history/alarmHistory',
+        childType: "none",
+        meta: {
+            title: "历史"
+        },
+        children: [
+            {
+                path: "alarmHistory",
+                component: history,
+                meta: {
+                    title: "告警历史"
+                },
+                redirect: '/history/alarmHistory/index',
+                children:[
+                    {
+                        path: "index",
+                        component: _import("history/alarmHistory/alarmHistory"),
+                        meta: {
+                            title: "告警历史查询"
+                        }
+                    }
+                ]
+            },
+            {
+                path: "historyData",
+                component: history,
+                meta: {
+                    title: "历史数据"
+                },
+                redirect: '/history/historyData/index',
+                children:[
+                    {
+                        path: "index",
+                        component: _import("history/historyData/historyData"),
+                        meta: {
+                            title: "历史数据查询"
                         }
                     }
                 ]

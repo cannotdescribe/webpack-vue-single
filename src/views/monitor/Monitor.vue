@@ -1,13 +1,27 @@
 <template>
     <el-container>
         <el-aside>
-            tree
+            <tree @handleNodeClick="handleNodeClick"></tree>
         </el-aside>
         <el-container>
             <el-main>
-                监控
+                <router-view></router-view>
             </el-main>
         </el-container>
     </el-container>
 </template>
+<script>
+    import Tree from "./components/tree"
+
+    export default {
+        components:{
+            Tree
+        },
+        methods:{
+            handleNodeClick: (data)=>{
+//                this.$route.go(data.nodeType);
+            }
+        }
+    }
+</script>
 

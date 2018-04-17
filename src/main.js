@@ -16,7 +16,8 @@ import './permission'
 import './mock'
 
 Vue.use(Element, {
-    size: 'medium' // set element-ui default size
+    size: 'medium' ,// set element-ui default size
+    i18n: (key, value) => i18n.t(key, value)
 });
 
 new Vue({

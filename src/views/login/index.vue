@@ -27,10 +27,9 @@
     </div>
 </template>
 <script>
-    //import { loginByUsername } from '@/api/login'
     import axios from 'axios'
     import router from "@/router"
-    import { Message } from 'element-ui';
+    import { Message } from 'element-ui'
     export default {
         data(){
             const validateUsername = (rule, value, callback) => {
@@ -130,6 +129,10 @@
                             })
                             .catch(function (error) {
                                 console.log("error:\n");
+                                Message({
+                                    message: "提交出错！",
+                                    type: 'error'
+                                })
                                 console.log(error);
                             });
                     }

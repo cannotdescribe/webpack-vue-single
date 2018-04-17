@@ -39,6 +39,12 @@ var config = {
                 loader: "babel-loader"
             },
             {
+                test: /\.js$/,
+                exclude: /node_modules/,
+                loader: 'babel-loader?cacheDirectory',
+                include: [resolve('src'), resolve('test'), resolve('node_modules/webpack-dev-server/client')]
+            },
+            {
                 test: /\.css$/,
                 use: [
                     "style-loader","css-loader"
@@ -79,6 +85,14 @@ var config = {
                         }
                     }
                 ]
+            },
+            {
+                test: /\.svg$/,
+                loader: 'svg-sprite-loader',
+                include: [resolve('src/icons')],
+                options: {
+                    symbolId: 'icon-[name]'
+                }
             }
         ]
     },
@@ -101,6 +115,15 @@ if(mode === 'development'){
         port: 8090,
         compress: true,
         host: "127.0.0.1",
+        proxy:{
+            '/api':{
+                target:'http://127.0.0.1:8080',
+                changeOrigin:true,
+                pathRewrite:{
+                    '/api':'/'
+                }
+            }
+        },
         overlay: {
             errors: true
         },
@@ -113,6 +136,7 @@ if(mode === 'development'){
 
     }
 }
+
 
 
 module.exports = config;

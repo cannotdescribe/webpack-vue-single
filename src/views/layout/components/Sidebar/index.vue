@@ -30,6 +30,7 @@
                 }
             }
         }
+
         return [];
     }
 
@@ -42,7 +43,6 @@
             for(let key in rs){
                 let router = rs[key];
                 if(router.path.indexOf(names[index]) >= 0){
-                    console.log("hello", router.childType );
                     p += "/"+names[index];
                     if(router.childType === "navigate"){
                         rs = router.children;
