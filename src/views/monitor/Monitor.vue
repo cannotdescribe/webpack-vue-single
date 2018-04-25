@@ -25,3 +25,14 @@
     }
 </script>
 
+<style>
+    .el-container{
+        overflow: hidden;
+    }
+    .el-main{
+        padding:0;
+        margin:0;
+        overflow: hidden;
+    }
+</style>
+
