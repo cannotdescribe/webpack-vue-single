@@ -76,7 +76,24 @@ export const asyncRouterMap = [
             }
         ]
     },
-
+    {
+        path: '/example',
+        component: Layout,
+        redirect: '/example/demo01',
+        meta: {
+            title: "监控"
+        },
+        childType: "none",
+        children:[{
+            path: "demo01",
+            component: _import("example/demo01"),
+            hidden: true
+        },{
+            path: "demo02",
+            component: _import("example/demo02"),
+            hidden: true
+        }]
+    },
     {
         path: '/video',
         component: Layout,
