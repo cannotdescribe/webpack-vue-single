@@ -2,11 +2,13 @@
   import { isDef } from 'element-ui/src/utils/shared';
   import scrollIntoView from 'element-ui/src/utils/scroll-into-view';
   import { generateId } from 'element-ui/src/utils/util';
+  import CascaderNode from './cascader-node.vue';
+  import TreeStore from './model/tree-store';
 
   const copyArray = (arr, props) => {
     if (!arr || !Array.isArray(arr) || !props) return arr;
     const result = [];
-    const configurableProps = ['__IS__FLAT__OPTIONS', 'label', 'value', 'disabled', 'checked'];
+    const configurableProps = ['__IS__FLAT__OPTIONS', 'label', 'value', 'disabled', 'checked', 'showCheckbox'];
     const childrenProp = props.children || 'children';
     arr.forEach(item => {
       const itemCopy = {};
@@ -29,7 +31,9 @@
 
   export default {
     name: 'ElCascaderMenu',
-
+    components: {
+        CascaderNode
+    },
     data() {
       return {
         inputWidth: 0,
@@ -43,7 +47,12 @@
         popperClass: '',
         hoverTimer: 0,
         clicking: false,
-        id: generateId()
+        id: generateId(),
+        isCascader: false,
+        cascader: null,
+        modelC: true,
+
+        nodes: []
       };
     },
 
@@ -66,7 +75,7 @@
         cache: false,
         get() {
           const activeValue = this.activeValue;
-          const configurableProps = ['label', 'value', 'children', 'disabled', 'checked'];
+          const configurableProps = ['label', 'value', 'children', 'disabled', 'checked', 'showCheckbox'];
 
           const formatOptions = options => {
             options.forEach(option => {
@@ -100,7 +109,17 @@
         }
       }
     },
+    created(){
+        const parent = this.$parent;
+        if (parent.isCascader) {
+            this.cascader = parent;
+        } else {
+            this.cascader = parent.cascader;
+        }
 
+		this.nodes = new
+
+    },
     methods: {
       select(item, menuIndex) {
         if (item.__IS__FLAT__OPTIONS) {
@@ -131,12 +150,25 @@
       handleMenuEnter() {
         this.$nextTick(() => this.$refs.menus.forEach(menu => this.scrollMenu(menu)));
       },
-      myChangeHandler(item){
-          return ()=>{
-              console.log("qian: ", item.checked);
-              item.checked = !item.checked;
-              console.log("hou: ", item.checked);
-          }
+      changeHandler(activeValue){
+        function changeChecked(options, activeValue, index){
+            if(!index){
+                index = 0;
+            }
+            for(let option of options){
+                if(option.value === activeValue[index]){
+                    if(activeValue.length-1 <= index){
+                        option.checked = !option.checked;
+                    }else{
+                        changeChecked(option.children, activeValue, ++index);
+                    }
+                }
+            }
+        }
+        let _this = this;
+        return ()=>{
+            changeChecked(_this.options, activeValue);
+        }
       }
     },
 
@@ -149,6 +181,7 @@
         popperClass,
         hoverThreshold
       } = this;
+//      console.log("activeOptions", activeOptions);
       let itemId = null;
       let itemIndex = 0;
 
@@ -273,8 +306,22 @@
             itemId = `${menuId}-${itemIndex}`;
             itemIndex++;
           }
+            console.log(CascaderNode);
           return (
-            <li
+              <cascader-node
+                {...events}
+                item={item}
+                itemId={itemId}
+                ownsId={ownsId}
+                activeValue={activeValue}
+                menuIndex={menuIndex}
+                on-change={this.changeHandler(activeValue)}
+              ></cascader-node>
+          );
+        });
+        /*
+
+        <li
               class={{
                 'el-cascader-menu__item': true,
                 'el-cascader-menu__item--extensible': item.children,
@@ -290,15 +337,25 @@
               id = { itemId }
               aria-owns = { !item.children ? null : ownsId }
             >
-              <el-checkbox value={item.checked} on-change={this.myChangeHandler(item)}></el-checkbox>
-              {item.checked?0:1}
+              {item.showCheckbox?
+                <el-checkbox
+                  value={item.checked?true:false}
+                  on-change={this.changeHandler(activeValue)}
+                  style="right: 7%;"
+                />
+              :""}
+              {item.checked? 1:0}
               {item.label}
             </li>
-          );
-        });
-//        <input type='checkbox' value={item.checked} on-change={this.myChangeHandler}/>
-//        <el-checkbox value={item.checked} on-change="myChangeHandler" on-click="myClickHandler"></el-checkbox>
-//        <el-checkbox v-model={item.checked}></el-checkbox>
+
+        {item.showCheckbox? <el-checkbox value={item.checked?true:false} on-change={this.changeHandler(activeValue)} style="right: 7%;"></el-checkbox>:""}
+        <input type="checkbox" @click.stop="smallBtn"/>
+        <el-checkbox v-model="item.checked" style="right: 7%;"  ></el-checkbox>
+
+        <el-checkbox v-model={item.checked} style="right: 7%;"></el-checkbox>
+
+         */
+
         let menuStyle = {};
         if (isFlat) {
           menuStyle.minWidth = this.inputWidth + 'px';

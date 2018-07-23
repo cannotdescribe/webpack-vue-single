@@ -122,7 +122,8 @@ export default {
           label: 'label',
           value: 'value',
           disabled: 'disabled',
-          checked: 'checked'
+          checked: 'checked',
+          showCheckbox:'showCheckbox'
         };
       }
     },
@@ -170,7 +171,8 @@ export default {
     hoverThreshold: {
       type: Number,
       default: 500
-    }
+    },
+    checkStrictly: Boolean,
   },
 
   data() {
@@ -184,7 +186,8 @@ export default {
       flatOptions: null,
       id: generateId(),
       needFocus: true,
-      isOnComposition: false
+      isOnComposition: false,
+      isCascader: true
     };
   },
 
@@ -322,7 +325,7 @@ export default {
       this.$emit('change', value);
 
       if (close) {
-        this.menuVisible = false;
+//        this.menuVisible = false;
       } else {
         this.$nextTick(this.updatePopper);
       }
