@@ -18,29 +18,27 @@
         @keydown="keydownHandler"
         @mousedown="mousedownHandler"
     >
-        <!--:value="!!item.checked"-->
+        <!--v-model="item.checked"-->
         <el-checkbox
-            v-if="showCheckbox"
-            v-model="node.checked"
+            v-if="item.showCheckbox"
+            :value="node.checked"
             :indeterminate="node.indeterminate"
             :disabled="!!node.disabled"
             @click.native.stop
             @change="handleCheckChange"
         />
-        <!-- @change="changeHandler(activeValue)" -->
-        {{item.checked? 1:3}}
         {{item.label}}
+        |
+        {{node.checked? 1:0}}
+        |
+        {{node.indeterminate}}
     </li>
 </template>
 <script>
+    import Vue from "vue";
     export default {
         name: "CascaderNode",
         props:{
-            node: {
-                default() {
-                    return {};
-                }
-            },
             itemId: {
                 type: String,
                 require: true
@@ -53,7 +51,18 @@
             },
             menuIndex:{
                 type: Number
-            }
+            },
+            store: {
+
+            },
+			text:{
+			    type: String
+            },
+            node: {
+                default() {
+                    return {};
+                }
+            },
         },
         data(){
             return {
@@ -69,7 +78,12 @@
 
             'node.checked'(val) {
                 this.handleSelectChange(val, this.node.indeterminate);
-            },
+            }
+        },
+        computed:{
+            item(){
+            	return this.node.data;
+            }
         },
         created() {
             const parent = this.$parent;
@@ -96,6 +110,7 @@
         },
         methods: {
             clickHandler(){
+//            	console.log("click: ", this.node?this.node.data.label:undefined);
                 this.$emit("click")
             },
             focusHandler(){

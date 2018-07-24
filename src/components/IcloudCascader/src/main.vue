@@ -62,7 +62,7 @@
 
 <script>
 import Vue from 'vue';
-import ElCascaderMenu from './menu';
+import IcloudCascaderMenu from './menu';
 import ElInput from 'element-ui/packages/input';
 import Popper from 'element-ui/src/utils/vue-popper';
 import Clickoutside from 'element-ui/src/utils/clickoutside';
@@ -71,6 +71,10 @@ import Locale from 'element-ui/src/mixins/locale';
 import { t } from 'element-ui/src/locale';
 import debounce from 'throttle-debounce/debounce';
 import { generateId } from 'element-ui/src/utils/util';
+
+import CascaderStore from './model/cascader-store';
+
+import TreeStore from './eModel/tree-store';
 
 const popperMixin = {
   props: {
@@ -90,7 +94,7 @@ const popperMixin = {
 };
 
 export default {
-  name: 'ElCascader',
+  name: 'IcloudCascader',
 
   directives: { Clickoutside },
 
@@ -186,8 +190,7 @@ export default {
       flatOptions: null,
       id: generateId(),
       needFocus: true,
-      isOnComposition: false,
-      isCascader: true
+      isOnComposition: false
     };
   },
 
@@ -260,8 +263,22 @@ export default {
 
   methods: {
     initMenu() {
-      this.menu = new Vue(ElCascaderMenu).$mount();
+      this.menu = new Vue(IcloudCascaderMenu).$mount();
       this.menu.options = this.options;
+
+      this.menu.store = new TreeStore({
+          data: this.options,
+          checkStrictly: true,
+          load: undefined,
+          defaultCheckedKeys:[],
+          lazy: false,
+          props: this.props,
+      });
+
+      console.log("this.store: ", this.store);
+
+      this.menu.root = this.menu.store.root;
+
       this.menu.props = this.props;
       this.menu.expandTrigger = this.expandTrigger;
       this.menu.changeOnSelect = this.changeOnSelect;

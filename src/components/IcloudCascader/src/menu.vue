@@ -2,8 +2,8 @@
   import { isDef } from 'element-ui/src/utils/shared';
   import scrollIntoView from 'element-ui/src/utils/scroll-into-view';
   import { generateId } from 'element-ui/src/utils/util';
+
   import CascaderNode from './cascader-node.vue';
-  import TreeStore from './model/tree-store';
 
   const copyArray = (arr, props) => {
     if (!arr || !Array.isArray(arr) || !props) return arr;
@@ -30,9 +30,9 @@
   };
 
   export default {
-    name: 'ElCascaderMenu',
+    name: 'IcloudCascaderMenu',
     components: {
-        CascaderNode
+      CascaderNode
     },
     data() {
       return {
@@ -48,11 +48,11 @@
         hoverTimer: 0,
         clicking: false,
         id: generateId(),
-        isCascader: false,
-        cascader: null,
+        isCascader: true,
         modelC: true,
 
-        nodes: []
+		store: null,
+        root: null
       };
     },
 
@@ -107,18 +107,7 @@
           formatOptions(optionsCopy);
           return loadActiveOptions(optionsCopy);
         }
-      }
-    },
-    created(){
-        const parent = this.$parent;
-        if (parent.isCascader) {
-            this.cascader = parent;
-        } else {
-            this.cascader = parent.cascader;
-        }
-
-		this.nodes = new
-
+      },
     },
     methods: {
       select(item, menuIndex) {
@@ -173,6 +162,7 @@
     },
 
     render(h) {
+      console.log("render---------------------strat", this.root);
       const {
         activeValue,
         activeOptions,
@@ -181,7 +171,6 @@
         popperClass,
         hoverThreshold
       } = this;
-//      console.log("activeOptions", activeOptions);
       let itemId = null;
       let itemIndex = 0;
 
@@ -212,11 +201,32 @@
         }
       };
 
+
+      function queryNode(options, activeValue, index){
+        if(!index){
+          index = 0;
+        }
+        if(activeValue.length <= index){
+          return options;
+        }
+        for(let option of options){
+          if(option.data.value === activeValue[index]){
+            return queryNode(option.childNodes, activeValue, ++index);
+          }
+        }
+      }
+
+
+      function changeChecked(options, activeValue, menuIndex, itIndex){
+        return queryNode(options, activeValue.slice(0, menuIndex))[itIndex];
+      }
+
       const menus = this._l(activeOptions, (menu, menuIndex) => {
         let isFlat = false;
         const menuId = `menu-${this.id}-${ menuIndex}`;
         const ownsId = `menu-${this.id}-${ menuIndex + 1 }`;
-        const items = this._l(menu, item => {
+
+        const items = this._l(menu, (item, itIndex) => {
           const events = {
             on: {}
           };
@@ -306,55 +316,54 @@
             itemId = `${menuId}-${itemIndex}`;
             itemIndex++;
           }
-            console.log(CascaderNode);
+          let node = changeChecked(this.root.childNodes, activeValue, menuIndex, itIndex);
           return (
+                <cascader-node
+					{...events}
+                    text={node?node.data.label:undefined}
+                    node={node}
+					itemId={itemId}
+					ownsId={ownsId}
+					activeValue={activeValue}
+					menuIndex={menuIndex}
+					on-change={this.changeHandler(activeValue)}
+					store={this.store}
+				></cascader-node>
+          );
+        });
+/*
               <cascader-node
                 {...events}
+				node={node}
                 item={item}
                 itemId={itemId}
                 ownsId={ownsId}
                 activeValue={activeValue}
                 menuIndex={menuIndex}
                 on-change={this.changeHandler(activeValue)}
+                store={this.store}
               ></cascader-node>
-          );
-        });
-        /*
-
-        <li
-              class={{
-                'el-cascader-menu__item': true,
-                'el-cascader-menu__item--extensible': item.children,
-                'is-active': item.value === activeValue[menuIndex],
-                'is-disabled': item.disabled
-              }}
-              ref={item.value === activeValue[menuIndex] ? 'activeItem' : null}
-              {...events}
-              tabindex= { item.disabled ? null : -1 }
-              role="menuitem"
-              aria-haspopup={ !!item.children }
-              aria-expanded={ item.value === activeValue[menuIndex] }
-              id = { itemId }
-              aria-owns = { !item.children ? null : ownsId }
-            >
-              {item.showCheckbox?
-                <el-checkbox
-                  value={item.checked?true:false}
-                  on-change={this.changeHandler(activeValue)}
-                  style="right: 7%;"
-                />
-              :""}
-              {item.checked? 1:0}
-              {item.label}
-            </li>
-
-        {item.showCheckbox? <el-checkbox value={item.checked?true:false} on-change={this.changeHandler(activeValue)} style="right: 7%;"></el-checkbox>:""}
-        <input type="checkbox" @click.stop="smallBtn"/>
-        <el-checkbox v-model="item.checked" style="right: 7%;"  ></el-checkbox>
-
-        <el-checkbox v-model={item.checked} style="right: 7%;"></el-checkbox>
-
-         */
+ */
+				/*
+               <li
+                 class={{
+                       'el-cascader-menu__item': true,
+                           'el-cascader-menu__item--extensible': item.children,
+                           'is-active': item.value === activeValue[menuIndex],
+                           'is-disabled': item.disabled
+                   }}
+                   ref={item.value === activeValue[menuIndex] ? 'activeItem' : null}
+                   {...events}
+                   tabindex= { item.disabled ? null : -1 }
+                   role="menuitem"
+                   aria-haspopup={ !!item.children }
+                   aria-expanded={ item.value === activeValue[menuIndex] }
+                   id = { itemId }
+                   aria-owns = { !item.children ? null : ownsId }
+                 >
+                   {item.label}
+               </li>
+                */
 
         let menuStyle = {};
         if (isFlat) {
