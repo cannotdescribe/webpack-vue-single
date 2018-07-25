@@ -74,8 +74,6 @@ import { generateId } from 'element-ui/src/utils/util';
 
 import CascaderStore from './model/cascader-store';
 
-import TreeStore from './eModel/tree-store';
-
 const popperMixin = {
   props: {
     placement: {
@@ -177,6 +175,7 @@ export default {
       default: 500
     },
     checkStrictly: Boolean,
+    nodeKey:String
   },
 
   data() {
@@ -265,20 +264,19 @@ export default {
     initMenu() {
       this.menu = new Vue(IcloudCascaderMenu).$mount();
       this.menu.options = this.options;
-
-      this.menu.store = new TreeStore({
+	  this.menu.main = this;
+      this.menu.store = new CascaderStore({
+          key: this.nodeKey,
           data: this.options,
-          checkStrictly: true,
+          checkStrictly: false,
           load: undefined,
           defaultCheckedKeys:[],
           lazy: false,
           props: this.props,
       });
 
-      console.log("this.store: ", this.store);
-
       this.menu.root = this.menu.store.root;
-
+	  this.menu.checkStrictly = this.checkStrictly;
       this.menu.props = this.props;
       this.menu.expandTrigger = this.expandTrigger;
       this.menu.changeOnSelect = this.changeOnSelect;
@@ -440,7 +438,22 @@ export default {
     },
     handleComposition(event) {
       this.isOnComposition = event.type !== 'compositionend';
-    }
+    },
+
+    /* ----------- 为checkbox新增的方法 ------------ */
+    getCheckedNodes(leafOnly){
+      if(!this.menu || !this.menu.store){
+      	return [];
+      }
+	  return this.menu.store.getCheckedNodes(leafOnly);
+    },
+
+    setChecked(data, checked, deep){
+        if(!this.menu || !this.menu.store){
+            this.initMenu();
+        }
+        return this.menu.store.setChecked(data, checked, deep);
+    },
   },
 
   created() {

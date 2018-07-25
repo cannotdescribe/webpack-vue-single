@@ -7,13 +7,13 @@ export const getChildState = node => {
 	let allWithoutDisable = true;
 	for (let i = 0, j = node.length; i < j; i++) {
 		const n = node[i];
-		if (n.checked !== true || n.indeterminate) {
+		if ((n.checked !== true || n.indeterminate) && n.data.showCheckbox) {
 			all = false;
 			if (!n.disabled) {
 				allWithoutDisable = false;
 			}
 		}
-		if (n.checked !== false || n.indeterminate) {
+		if ((n.checked !== false || n.indeterminate) && n.data.showCheckbox) {
 			none = false;
 		}
 	}
@@ -24,9 +24,7 @@ export const getChildState = node => {
 const getPropertyFromData = function(node, prop) {
 	const props = node.store.props;
 	const data = node.data || {};
-	console.log("dsadsd ", props, data  )
 	const config = props[prop];
- //TODO
 
 	if (typeof config === 'function') {
 		return config(data, node);
@@ -69,7 +67,7 @@ export default class Node {
     this.data = null;
     this.parent = null;
     this.visible = true;
-		console.log("options, s-", options )
+
     for (let name in options) {
       if (options.hasOwnProperty(name)) {
         this[name] = options[name];
@@ -91,6 +89,7 @@ export default class Node {
 			this.setData(this.data);
 		}
 
+		store.registerNode(this);
   }
 
 	setData(data) {
@@ -102,15 +101,11 @@ export default class Node {
 		this.childNodes = [];
 
 		let children;
-		console.log("level: ", this.level);
-		console.log("data: ", this.data);
 		if (this.level === 0 && this.data instanceof Array) {
 			children = this.data;
 		} else {
 			children = getPropertyFromData(this, 'children') || [];
 		}
-
-		console.log("children: ", children);
 
 		for (let i = 0, j = children.length; i < j; i++) {
 			this.insertChild({ data: children[i] });
@@ -139,8 +134,6 @@ export default class Node {
 		}
 
 		child.level = this.level + 1;
-
-		console.log("------", index, child);
 
 		if (typeof index === 'undefined' || index < 0) {
 			this.childNodes.push(child);
@@ -205,9 +198,11 @@ export default class Node {
 					const childNodes = this.childNodes;
 					for (let i = 0, j = childNodes.length; i < j; i++) {
 						const child = childNodes[i];
-						passValue = passValue || value !== false;
-						const isCheck = child.disabled ? child.checked : passValue;
-						child.setChecked(isCheck, deep, true, passValue);
+						if(child.data.showCheckbox){
+							passValue = passValue || value !== false;
+							const isCheck = child.disabled ? child.checked : passValue;
+							child.setChecked(isCheck, deep, true, passValue);
+						}
 					}
 					const { half, all } = getChildState(childNodes);
 					if (!all) {
@@ -295,5 +290,48 @@ export default class Node {
 		}
 
 		this.updateLeafState();
+	}
+	shouldLoadData() {
+		return this.store.lazy === true && this.store.load && !this.loaded;
+	}
+
+	get label() {
+		return getPropertyFromData(this, 'label');
+	}
+
+	get icon() {
+		return getPropertyFromData(this, 'icon');
+	}
+
+	get key() {
+		const nodeKey = this.store.key;
+		if (this.data) return this.data[nodeKey];
+		return null;
+	}
+
+	get disabled() {
+		return getPropertyFromData(this, 'disabled');
+	}
+
+	get nextSibling() {
+		const parent = this.parent;
+		if (parent) {
+			const index = parent.childNodes.indexOf(this);
+			if (index > -1) {
+				return parent.childNodes[index + 1];
+			}
+		}
+		return null;
+	}
+
+	get previousSibling() {
+		const parent = this.parent;
+		if (parent) {
+			const index = parent.childNodes.indexOf(this);
+			if (index > -1) {
+				return index > 0 ? parent.childNodes[index - 1] : null;
+			}
+		}
+		return null;
 	}
 }

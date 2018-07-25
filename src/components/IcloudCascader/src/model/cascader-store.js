@@ -3,19 +3,16 @@ import { getNodeKey } from './util';
 
 export default class CascaderStore {
   constructor(options) {
+		this.nodesMap = {};
     for (let option in options) {
       if (options.hasOwnProperty(option)) {
         this[option] = options[option];
       }
     }
-
     this.root = new Node({
       data: this.data,
       store: this
     });
-
-		this.nodesMap = {};
-
 		if (this.lazy && this.load) {
 			const loadFn = this.load;
 			loadFn(this.root, (data) => {
@@ -49,7 +46,6 @@ export default class CascaderStore {
 
 	setChecked(data, checked, deep) {
 		const node = this.getNode(data);
-
 		if (node) {
 			node.setChecked(!!checked, deep);
 		}
@@ -112,5 +108,13 @@ export default class CascaderStore {
 		}
 
 		delete this.nodesMap[node.key];
+	}
+
+	registerNode(node) {
+		const key = this.key;
+		if (!key || !node || !node.data) return;
+
+		const nodeKey = node.key;
+		if (nodeKey !== undefined) this.nodesMap[node.key] = node;
 	}
 };

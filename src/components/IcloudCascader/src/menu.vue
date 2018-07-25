@@ -50,7 +50,7 @@
         id: generateId(),
         isCascader: true,
         modelC: true,
-
+		checkStrictly: Boolean,
 		store: null,
         root: null
       };
@@ -162,7 +162,6 @@
     },
 
     render(h) {
-      console.log("render---------------------strat", this.root);
       const {
         activeValue,
         activeOptions,
@@ -331,39 +330,6 @@
 				></cascader-node>
           );
         });
-/*
-              <cascader-node
-                {...events}
-				node={node}
-                item={item}
-                itemId={itemId}
-                ownsId={ownsId}
-                activeValue={activeValue}
-                menuIndex={menuIndex}
-                on-change={this.changeHandler(activeValue)}
-                store={this.store}
-              ></cascader-node>
- */
-				/*
-               <li
-                 class={{
-                       'el-cascader-menu__item': true,
-                           'el-cascader-menu__item--extensible': item.children,
-                           'is-active': item.value === activeValue[menuIndex],
-                           'is-disabled': item.disabled
-                   }}
-                   ref={item.value === activeValue[menuIndex] ? 'activeItem' : null}
-                   {...events}
-                   tabindex= { item.disabled ? null : -1 }
-                   role="menuitem"
-                   aria-haspopup={ !!item.children }
-                   aria-expanded={ item.value === activeValue[menuIndex] }
-                   id = { itemId }
-                   aria-owns = { !item.children ? null : ownsId }
-                 >
-                   {item.label}
-               </li>
-                */
 
         let menuStyle = {};
         if (isFlat) {

@@ -20,7 +20,7 @@
     >
         <!--v-model="item.checked"-->
         <el-checkbox
-            v-if="item.showCheckbox"
+            v-if="node.data.showCheckbox"
             :value="node.checked"
             :indeterminate="node.indeterminate"
             :disabled="!!node.disabled"
@@ -28,10 +28,6 @@
             @change="handleCheckChange"
         />
         {{item.label}}
-        |
-        {{node.checked? 1:0}}
-        |
-        {{node.indeterminate}}
     </li>
 </template>
 <script>
@@ -100,8 +96,7 @@
 
             const props = cascader.props || {};
             const childrenKey = props['children'] || 'children';
-
-            this.$watch(`node.data.${childrenKey}`, () => {
+            this.$watch(`node.data.${childrenKey}.checked`, (e,r,t) => {
                 this.node.updateChildren();
             });
 
@@ -110,8 +105,8 @@
         },
         methods: {
             clickHandler(){
-//            	console.log("click: ", this.node?this.node.data.label:undefined);
-                this.$emit("click")
+                this.$emit("click");
+                this.cascader.main.$emit('click', this.node.data);
             },
             focusHandler(){
                 this.$emit("focus")
@@ -126,7 +121,7 @@
                 this.node.setChecked(ev.target.checked, !this.cascader.checkStrictly);
                 this.$nextTick(() => {
                     const store = this.cascader.store;
-                    this.cascader.$emit('check', this.node.data, {
+                    this.cascader.main.$emit('check', this.node.data, {
                         checkedNodes: store.getCheckedNodes(),
                         checkedKeys: store.getCheckedKeys(),
                         halfCheckedNodes: store.getHalfCheckedNodes(),
@@ -137,7 +132,7 @@
 
             handleSelectChange(checked, indeterminate) {
                 if (this.oldChecked !== checked && this.oldIndeterminate !== indeterminate) {
-                    this.cascader.$emit('check-change', this.node.data, checked, indeterminate);
+                    this.cascader.main.$emit('check-change', this.node.data, checked, indeterminate);
                 }
                 this.oldChecked = checked;
                 this.indeterminate = indeterminate;
