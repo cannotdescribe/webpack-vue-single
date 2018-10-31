@@ -29,6 +29,7 @@
     "mockjs": "^1.0.1-beta3",
     "node-sass": "^4.8.3",
     "normalize.css": "^8.0.0",
+    "pixi.js": "^4.8.2",
     "postcss-loader": "^2.1.1",
     "sass-loader": "^6.0.7",
     "screenfull": "^3.3.2",

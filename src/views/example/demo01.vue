@@ -13,7 +13,7 @@
     </div>
 </template>
 <script>
-    import IcloudCascader from "@/components/IcloudCascader/cascader/index.js";
+    import IcloudCascader from "@/components/IcloudCascader/index.js";
     import ElButton from "../../../node_modules/element-ui/packages/button/src/button.vue";
 
     export default {
@@ -27,20 +27,26 @@
                     {
                     value: 'zhinan',
                     label: '指南',
+                    showCheckbox: true,
                     children: [
                         {
                         value: 'shejiyuanze',
                         label: '设计原则',
+                        showCheckbox: true,
                         children: [{
+                            showCheckbox: true,
                             value: 'yizhi',
                             label: '一致'
                         }, {
+                            showCheckbox: true,
                             value: 'fankui',
                             label: '反馈'
                         }, {
+                            showCheckbox: true,
                             value: 'xiaolv',
                             label: '效率'
                         }, {
+                            showCheckbox: true,
                             value: 'kekong',
                             label: '可控'
                         }]
