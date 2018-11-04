@@ -241,28 +241,28 @@ export const asyncRouterMap = [
     {
       path: '/pixi',
       component: Layout,
-      redirect: '/pixi/base',
+      redirect: '/pixi/index',
       childType: "none",
       meta: {
         title: "皮克西"
       },
       children: [
         {
-          path: "base",
-          component: history,
+          path: "index",
+          component: _import("pixi/index"),
           meta: {
             title: "基础"
           },
-          redirect: '/pixi/base/rectangle',
-          children:[
-            {
-              path: "rectangle",
-              component: _import("pixi/base/rectangle"),
-              meta: {
-                title: "矩形"
-              }
-            }
-          ]
+          // redirect: '/pixi/base/rectangle',
+          // children:[
+          //   {
+          //     path: "rectangle",
+          //     component: _import("pixi/base/rectangle"),
+          //     meta: {
+          //       title: "矩形"
+          //     }
+          //   }
+          // ]
         },
       ]
     },
