@@ -32,49 +32,51 @@ export default class EfficacyFrame{
             x: 0, y:0
         }
 
-        window.document.addEventListener("mouseup", ()=>{this.efficacyMouseUp()});
-        window.document.addEventListener("mousemove", ()=>{this.efficacyMouseMove()});
+        this.efficacyMouseUp = ()=>{
+            this.btnState.leftTop = false;
+            this.btnState.middleTop = false;
+            this.btnState.rightTop = false;
+            this.btnState.rightMiddle = false;
+            this.btnState.rightBottom = false;
+            this.btnState.centerBottom = false;
+            this.btnState.leftBottom = false;
+            this.btnState.leftCenter = false;
+            this.btnState.rotation = false;
+            this.btnState.remove = false;
+        }
+
+        this.efficacyMouseMove = ()=>{
+            if(this.btnState.leftTop){
+
+            }else if(this.btnState.middleTop){
+
+            }else if(this.btnState.rightTop){
+
+            }else if(this.btnState.rightMiddle){
+
+            }else if(this.btnState.rightBottom){
+
+            }else if(this.btnState.centerBottom){
+
+            }else if(this.btnState.leftBottom){
+
+            }else if(this.btnState.leftCenter){
+
+            }else if(this.btnState.rotation){
+
+            }
+        }
+
+        window.document.addEventListener("mouseup", this.efficacyMouseUp);
+        window.document.addEventListener("mousemove", this.efficacyMouseMove);
     }
 
     destroy(){
-        window.document.addEventListener("mouseup", ()=>{this.efficacyMouseUp()});
-        window.document.addEventListener("mousemove", ()=>{this.efficacyMouseMove()});
+        window.document.addEventListener("mouseup", this.efficacyMouseUp);
+        window.document.addEventListener("mousemove", this.efficacyMouseMove);
         this.rotationPock.destroy();
     }
 
-    efficacyMouseUp(){
-        this.btnState.leftTop = false;
-        this.btnState.middleTop = false;
-        this.btnState.rightTop = false;
-        this.btnState.rightMiddle = false;
-        this.btnState.rightBottom = false;
-        this.btnState.centerBottom = false;
-        this.btnState.leftBottom = false;
-        this.btnState.leftCenter = false;
-        this.btnState.rotation = false;
-        this.btnState.remove = false;
-    }
-    efficacyMouseMove(){
-        if(this.btnState.leftTop){
-
-        }else if(this.btnState.middleTop){
-
-        }else if(this.btnState.rightTop){
-
-        }else if(this.btnState.rightMiddle){
-
-        }else if(this.btnState.rightBottom){
-
-        }else if(this.btnState.centerBottom){
-
-        }else if(this.btnState.leftBottom){
-
-        }else if(this.btnState.leftCenter){
-
-        }else if(this.btnState.rotation){
-
-        }
-    }
     leftTopHandler(){
 
     }

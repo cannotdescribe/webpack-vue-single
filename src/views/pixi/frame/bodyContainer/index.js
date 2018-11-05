@@ -23,16 +23,15 @@ export default class BodyContainer{
         this.app = new PIXI.Application({width: this.$el.offsetWidth, height: this.$el.offsetHeight, transparent: true});
         this.$el.appendChild(this.app.view);
 
-        // this.app.view.addEventListener("mouseover", e=>{
-        //     this.imgSrcReference = this.imgSrc;
-        // });
-
-        // this.app.view.addEventListener("mouseup", e=>{
-        //     if(this.imgSrcReference){
-        //         this.bunnyContainer.addChild(this.nodeSpriteChange({imgSrc: this.imgSrcReference, x:e.offsetX, y:e.offsetY}));
-        //         this.imgSrcReference = null;
-        //     }
-        // });
+        this.mouseover = ()=>{
+            this.imgSrcReference = this.imgSrc;
+        }
+        this.mouseup = e=>{
+            if(this.imgSrcReference){
+                this.bunnyContainer.addChild(this.nodeSpriteChange({imgSrc: this.imgSrcReference, x:e.offsetX, y:e.offsetY}));
+                this.imgSrcReference = null;
+            }
+        }
         this.app.view.addEventListener("mouseover", this.mouseover);
         this.app.view.addEventListener("mouseup", this.mouseup);
 
@@ -60,16 +59,10 @@ export default class BodyContainer{
 
         this.createDemo();
     }
-    mouseover(){
-        this.imgSrcReference = this.imgSrc;
-    }
-    mouseup(){
-        if(this.imgSrcReference){
-            this.bunnyContainer.addChild(this.nodeSpriteChange({imgSrc: this.imgSrcReference, x:e.offsetX, y:e.offsetY}));
-            this.imgSrcReference = null;
-        }
-    }
+
     destroy(){
+        this.app.view.removeEventListener("mouseover", this.mouseover);
+        this.app.view.removeEventListener("mouseup", this.mouseup);
         this.efficacyFrame.destroy();
     }
     setImgSrc(imgSrc){
