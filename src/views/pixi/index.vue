@@ -26,13 +26,9 @@
 <script>
     import SiderbarDevice from "./frame/siderbarDevice.vue"
     import BodyContainer from "./frame/bodyContainer/index.vue"
-    import ElButton from "../../../node_modules/element-ui/packages/button/src/button.vue";
-    import ElInput from "../../../node_modules/element-ui/packages/input/src/input.vue";
 
     export default {
         components:{
-            ElInput,
-            ElButton,
             SiderbarDevice,
             BodyContainer
         },

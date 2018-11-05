@@ -47,7 +47,6 @@
                     this.$emit("pointermove", e)
                 }
             },
-
             imgPositionStd({x, y}){
                 return {x: x-this.maskImg.imgWidth/2, y:y-this.maskImg.imgHeight/2};
             },
@@ -63,15 +62,13 @@
                 image.onload = () => {
                     let width = image.naturalWidth;
                     let height = image.naturalHeight;
-
-                    console.log("imgSrc: " , width, height);
                     let app = new PIXI.Application({width, height, transparent: true});
-                    _this.$el.appendChild(app.view);
+                    this.$el.appendChild(app.view);
                     let texture = PIXI.Texture.fromImage(imgSrc);
                     let sprite = new PIXI.Sprite(texture);
                     app.imgSrc = imgSrc;
                     app.stage.addChild(sprite);
-                    _this.nodeEvent(app);
+                    this.nodeEvent(app);
                 }
             },
             nodeEvent(app){
