@@ -7,6 +7,7 @@ export default class EfficacyFrame{
         this.app = app;
         this.plane = plane;
         this.bunnyContainer = bunnyContainer;
+        //选择中的bunny
         this.bunnySelect = bunnySelect;
         this.efficacyContainer = {};
         this.squaresEfficacy = [];
@@ -17,9 +18,9 @@ export default class EfficacyFrame{
         };
         this.btnState = {
             leftTop: false,
-            middleTop: false,
+            centerTop: false,
             rightTop: false,
-            rightMiddle: false,
+            rightCenter: false,
             rightBottom: false,
             centerBottom: false,
             leftBottom: false,
@@ -28,44 +29,91 @@ export default class EfficacyFrame{
             remove: false
         };
         this.rotationPock = new RotationPock(this);
+        //efficacyFrame 整个位置变换是所需要的参照坐标
         this.initPosition = {
             x: 0, y:0
-        }
+        };
+        //efficacyFrame 单个点变换是所需要的参照坐标
+        this.efficacyInitPosition = {
+            x:0, y:0
+        };
+        //efficacyFrameSize efficacyFrame 真实大小
+        this.efficacyFrameSize = {
+            width:0, height:0
+        };
 
         this.efficacyMouseUp = ()=>{
+            //bunny变化完成，将所有bunny的anchor恢复回原状
+            this.bunnySelect.forEach(bunny =>{
+                let anchorReferenceX = bunny.anchor.x;
+                let anchorReferenceY = bunny.anchor.y;
+                bunny.anchor.set(0.5);
+                bunny.position.x = bunny.position.x - bunny.width/2 - (anchorReferenceX-1) * bunny.width;
+                bunny.position.y = bunny.position.y - bunny.height/2 - (anchorReferenceY-1) * bunny.height;
+            });
+
+
             this.btnState.leftTop = false;
-            this.btnState.middleTop = false;
+            this.btnState.centerTop = false;
             this.btnState.rightTop = false;
-            this.btnState.rightMiddle = false;
+            this.btnState.rightCenter = false;
             this.btnState.rightBottom = false;
             this.btnState.centerBottom = false;
             this.btnState.leftBottom = false;
             this.btnState.leftCenter = false;
             this.btnState.rotation = false;
             this.btnState.remove = false;
-        }
+        };
+        /**
+         * efficacy拖拽移动的核心方法, 所有的动作都在这里面完成。
+         * @param e
+         */
+        this.efficacyMouseMove = e=>{
+            let widthMove = e.x - this.efficacyInitPosition.x ;
+            let heightMove = e.y - this.efficacyInitPosition.y;
 
-        this.efficacyMouseMove = ()=>{
             if(this.btnState.leftTop){
-
-            }else if(this.btnState.middleTop){
-
+                this.bunnySelect.forEach(bunny => {
+                    bunny.width = bunny.initSizeAndPosition.width/this.efficacyFrameSize.width * -widthMove + bunny.initSizeAndPosition.width;
+                    bunny.height = bunny.initSizeAndPosition.height/this.efficacyFrameSize.height * -heightMove + bunny.initSizeAndPosition.height;
+                });
+            }else if(this.btnState.centerTop){
+                this.bunnySelect.forEach(bunny => {
+                    bunny.height = bunny.initSizeAndPosition.height/this.efficacyFrameSize.height * -heightMove + bunny.initSizeAndPosition.height;
+                });
             }else if(this.btnState.rightTop){
-
-            }else if(this.btnState.rightMiddle){
-
+                this.bunnySelect.forEach(bunny => {
+                    bunny.width = bunny.initSizeAndPosition.width/this.efficacyFrameSize.width * widthMove + bunny.initSizeAndPosition.width;
+                    bunny.height = bunny.initSizeAndPosition.height/this.efficacyFrameSize.height * -heightMove + bunny.initSizeAndPosition.height;
+                });
+            }else if(this.btnState.rightCenter){
+                this.bunnySelect.forEach(bunny => {
+                    bunny.width = bunny.initSizeAndPosition.width/this.efficacyFrameSize.width * widthMove + bunny.initSizeAndPosition.width;
+                });
             }else if(this.btnState.rightBottom){
-
+                this.bunnySelect.forEach(bunny => {
+                    bunny.width = bunny.initSizeAndPosition.width/this.efficacyFrameSize.width * widthMove + bunny.initSizeAndPosition.width;
+                    bunny.height = bunny.initSizeAndPosition.height/this.efficacyFrameSize.height * heightMove + bunny.initSizeAndPosition.height;
+                });
             }else if(this.btnState.centerBottom){
-
+                this.bunnySelect.forEach(bunny => {
+                    bunny.height = bunny.initSizeAndPosition.height/this.efficacyFrameSize.height * heightMove + bunny.initSizeAndPosition.height;
+                });
             }else if(this.btnState.leftBottom){
-
+                this.bunnySelect.forEach(bunny => {
+                    bunny.width = bunny.initSizeAndPosition.width/this.efficacyFrameSize.width * -widthMove + bunny.initSizeAndPosition.width;
+                    bunny.height = bunny.initSizeAndPosition.height/this.efficacyFrameSize.height * heightMove + bunny.initSizeAndPosition.height;
+                });
             }else if(this.btnState.leftCenter){
-
+                this.bunnySelect.forEach(bunny => {
+                    bunny.width = bunny.initSizeAndPosition.width/this.efficacyFrameSize.width * -widthMove + bunny.initSizeAndPosition.width;
+                });
             }else if(this.btnState.rotation){
 
             }
-        }
+
+
+        };
 
         window.document.addEventListener("mouseup", this.efficacyMouseUp);
         window.document.addEventListener("mousemove", this.efficacyMouseMove);
@@ -77,9 +125,6 @@ export default class EfficacyFrame{
         this.rotationPock.destroy();
     }
 
-    leftTopHandler(){
-
-    }
     _initEfficacy(){
         this.efficacyContainer = new PIXI.Container();
         this.app.stage.addChild(this.efficacyContainer);
@@ -87,16 +132,25 @@ export default class EfficacyFrame{
         this.efficacyContainer.buttonMode = true;
         this.efficacyContainer.interactive = true;
 
-        this.plane.on("pointerdown", e=>{
+        this.plane.on("pointerdown", ()=>{
             this.clearEfficacy();
         });
     }
+
+    efficacyFramePositionComputed(squaresEfficacy, btnState, widthMove, hieghtMove){
+        if(btnState.leftTop){
+
+        }
+    }
+    //点击设备时触发的efficacyFrame事件
     startEfficacy(x, y){
         this.efficacy.x = x;
         this.efficacy.y = y;
     }
+    //释放设备时触发的efficacyFrame事件
     endEfficacy(x, y){
     }
+    //移动设备时触发的efficacyFrame事件
     moveEfficacy(x, y){
         this.efficacyContainer.position.x = x - this.efficacy.x + this.initPosition.x;
         this.efficacyContainer.position.y = y - this.efficacy.y + this.initPosition.y;
@@ -104,6 +158,13 @@ export default class EfficacyFrame{
     clearEfficacy(){
         this.efficacyContainer.removeChildren(0, this.efficacyContainer.children.length);
     }
+
+    /**
+     * 求出实际efficacyFrame所占用的宽高
+     * 和bunny的宽高，旋转角度都有关系
+     * @param bunnys
+     * @returns {{top: *, right: *, bottom: *, left: *}}
+     */
     efficacyMaxSize(bunnys){
         let left , right , top , bottom ;
         for(let bunny of bunnys){
@@ -173,9 +234,48 @@ export default class EfficacyFrame{
             if(top > new_rt[1]) top = new_rt[1];
             if(bottom < new_lb[1]) bottom = new_lb[1];
         }
-        return {top: top-6, right: right+6, bottom: bottom+6, left: left-6};
+        return {top: top, right: right, bottom: bottom, left: left};
+    }
+    /**
+     * 计算新的anchor
+     * @param width                  float                  bunny宽
+     * @param height                 float                  bunny高
+     * @param x                      float                  bunny 位置x轴
+     * @param y                      float                  bunny 位置y轴
+     * @param anchor                 {x: float, y: float}   bunny anchor
+     * @param efficacyAnchorPosition {x: float, y: float}   efficacy应该的anchor位置
+     */
+    computedAnchor(width, height, x, y, anchor, efficacyAnchorPosition){
+        return {x :(efficacyAnchorPosition.x - (x - width * anchor.x)) / width, y: (efficacyAnchorPosition.y - (y - height * anchor.y)) / height};
     }
 
+    /**
+     * 获得 新的anchor坐标
+     * @param bunny
+     * @param efficacyFrameSize
+     * @returns {{x, y}|*}
+     */
+    efficacyGetAnchor(bunny, efficacyAnchorPosition){
+        return this.computedAnchor(
+            bunny.initSizeAndPosition.width,
+            bunny.initSizeAndPosition.height,
+            bunny.initSizeAndPosition.x,
+            bunny.initSizeAndPosition.y,
+            {
+                x: bunny.anchor.x,
+                y: bunny.anchor.y
+            },
+            efficacyAnchorPosition
+        );
+    }
+
+    /**
+     * 入口:
+     *  所选的bunnys在这里进行初始化工作。
+     *
+     *  TODO ##注意:目前不支持bunny的append动作##
+     * @param bunnys
+     */
     compose(bunnys){
         let _this = this;
         this.clearEfficacy();
@@ -191,9 +291,56 @@ export default class EfficacyFrame{
             graphics.lineTo(x+5, y-5);
             graphics.lineTo(x-5, y-5);
             graphics.endFill();
+            graphics.interactive = true;
+            graphics.on("pointerdown", e=>{
+                if(btnState) _this.btnState[btnState] = true;
+                _this.efficacyInitPosition.x = e.data.originalEvent.x;
+                _this.efficacyInitPosition.y = e.data.originalEvent.y;
+                //为了对bunny形态做出变化，需要设置新的anchor
+                _this.bunnySelect.forEach(bunny =>{
+                    bunny.initSizeAndPosition = {};
+                    bunny.initSizeAndPosition.width = bunny.width;
+                    bunny.initSizeAndPosition.height = bunny.height;
+                    bunny.initSizeAndPosition.x = bunny.position.x;
+                    bunny.initSizeAndPosition.y = bunny.position.y;
 
-            graphics.on("pointerdown", ()=>{
-                if(btnState) _this.btnState[btnState] = true
+                    let efficacyAnchorPosition = {x: 0, y: 0};
+                    if(_this.btnState.leftTop){
+                        efficacyAnchorPosition.x = _this.efficacyContainer.position.x + _this.efficacyFrameSize.width/2 ;
+                        efficacyAnchorPosition.y = _this.efficacyContainer.position.y + _this.efficacyFrameSize.height/2;
+                    }else if(_this.btnState.centerTop){
+                        efficacyAnchorPosition.x = _this.efficacyContainer.position.x;
+                        efficacyAnchorPosition.y = _this.efficacyContainer.position.y + _this.efficacyFrameSize.height/2;
+                    }else if(_this.btnState.rightTop){
+                        efficacyAnchorPosition.x = _this.efficacyContainer.position.x - _this.efficacyFrameSize.width/2;
+                        efficacyAnchorPosition.y = _this.efficacyContainer.position.y + _this.efficacyFrameSize.height/2;
+                    }else if(_this.btnState.rightCenter){
+                        efficacyAnchorPosition.x = _this.efficacyContainer.position.x - _this.efficacyFrameSize.width/2;
+                        efficacyAnchorPosition.y = _this.efficacyContainer.position.y;
+                    }else if(_this.btnState.rightBottom){
+                        efficacyAnchorPosition.x = _this.efficacyContainer.position.x - _this.efficacyFrameSize.width/2;
+                        efficacyAnchorPosition.y = _this.efficacyContainer.position.y - _this.efficacyFrameSize.height/2;
+                    }else if(_this.btnState.centerBottom){
+                        efficacyAnchorPosition.x = _this.efficacyContainer.position.x;
+                        efficacyAnchorPosition.y = _this.efficacyContainer.position.y - _this.efficacyFrameSize.height/2;
+                    }else if(_this.btnState.leftBottom){
+                        efficacyAnchorPosition.x = _this.efficacyContainer.position.x + _this.efficacyFrameSize.width/2;
+                        efficacyAnchorPosition.y = _this.efficacyContainer.position.y - _this.efficacyFrameSize.height/2;
+                    }else if(_this.btnState.leftCenter){
+                        efficacyAnchorPosition.x = _this.efficacyContainer.position.x + _this.efficacyFrameSize.width/2;
+                        efficacyAnchorPosition.y = _this.efficacyContainer.position.y;
+                    }
+                    let anchor = _this.efficacyGetAnchor(bunny, efficacyAnchorPosition);
+                    bunny.anchor.set(anchor.x, anchor.y);
+                    bunny.position.x = bunny.position.x + bunny.width/2 + (bunny.anchor.x-1)*bunny.width;
+                    bunny.position.y = bunny.position.y + bunny.height/2 + (bunny.anchor.y-1)*bunny.height;
+                });
+
+                //为efficacyFrame形态变化做好数据初始化
+                this.squaresEfficacy.forEach(square=>{
+                    square.initPosition.x = square.position.x;
+                    square.initPosition.y = square.position.y;
+                })
             });
             graphics.zOrder = 1;
             return graphics;
@@ -260,10 +407,10 @@ export default class EfficacyFrame{
         this.size.height = bottom - top;
         this.squaresEfficacy = [
             createSquare(-this.size.width/2, -this.size.height/2, "leftTop"),
-            createSquare(0, -this.size.height/2, "middleTop"),
+            createSquare(0, -this.size.height/2, "centerTop"),
             createSquare(this.size.width/2, -this.size.height/2, "rightTop"),
 
-            createSquare(this.size.width/2, 0, "rightMiddle"),
+            createSquare(this.size.width/2, 0, "rightCenter"),
             createSquare(this.size.width/2, this.size.height/2, "rightBottom"),
 
             createSquare(0, this.size.height/2, "centerBottom"),
@@ -272,17 +419,20 @@ export default class EfficacyFrame{
 
             createCircle(0, -this.size.height/2-20, "rotation"),
 
-            createSquare(-this.size.width/2-20, -this.size.height/2-20),
-            createSquare(this.size.width/2+20, -this.size.height/2-20),
+            createSquare(-this.size.width/2-15, -this.size.height/2-15),
+            createSquare(this.size.width/2+15, -this.size.height/2-15),
 
-            createRemove(this.size.width/2+20, this.size.height/2+20),
-            createSquare(-this.size.width/2-20, this.size.height/2+20)
+            createRemove(this.size.width/2+15, this.size.height/2+15),
+            createSquare(-this.size.width/2-15, this.size.height/2+15)
         ];
 
         this.squaresEfficacy.forEach(s=>{ this.efficacyContainer.addChild(s); });
         // this.efficacyContainer.anchor.set(0.5);
         this.efficacyContainer.position.x = (right - left)/2 + left;
         this.efficacyContainer.position.y = (bottom - top)/2 + top;
+
+        this.efficacyFrameSize.width = right - left;
+        this.efficacyFrameSize.height = bottom - top;
 
         this.initPosition.x = this.efficacyContainer.position.x;
         this.initPosition.y = this.efficacyContainer.position.y;

@@ -13,7 +13,7 @@ export default class RotationPock{
 
     }
     computedRadius(width, height){
-        return Math.sqrt(Math.pow(width+40, 2)+Math.pow(height+40, 2))/2
+        return Math.sqrt(Math.pow(width+30, 2)+Math.pow(height+30, 2))/2
     }
     displayRotationPock(){
         let graphics = new PIXI.Graphics();
