@@ -136,6 +136,10 @@ export default class BodyContainer{
                 }
             }
             if(!clickSelected){
+                bunny.initSizeAndPosition = {
+                    x: bunny.position.x,
+                    y: bunny.position.y
+                };
                 if(_this.isCtrlDown){
                     _this.bunnySelect.push(bunny);
                 }else{
@@ -143,7 +147,7 @@ export default class BodyContainer{
                     _this.bunnySelect.push(bunny);
                 }
             }
-            _this.efficacyFrame.compose(_this.bunnySelect);
+            _this.efficacyFrame.compose();
             _this.efficacyFrame.startEfficacy(this.x, this.y);
         }
 
@@ -152,8 +156,8 @@ export default class BodyContainer{
             this.dragging = false;
             this.data = null;
             for(let bunny of _this.bunnySelect){
-                bunny.mouseEvent.positionInitX = bunny.position.x;
-                bunny.mouseEvent.positionInitY = bunny.position.y;
+                bunny.initSizeAndPosition.x = bunny.position.x;
+                bunny.initSizeAndPosition.y = bunny.position.y;
             }
             _this.efficacyFrame.endEfficacy(this.x, this.y);
         }
@@ -161,8 +165,8 @@ export default class BodyContainer{
         function onDragMove(event) {
             if (this.dragging) {
                 for(let bunny of _this.bunnySelect){
-                    bunny.x = bunny.mouseEvent.positionInitX + event.data.originalEvent.screenX - _this.mouseEvent.initX;
-                    bunny.y = bunny.mouseEvent.positionInitY + event.data.originalEvent.screenY - _this.mouseEvent.initY;
+                    bunny.position.x = bunny.initSizeAndPosition.x + event.data.originalEvent.screenX - _this.mouseEvent.initX;
+                    bunny.position.y = bunny.initSizeAndPosition.y + event.data.originalEvent.screenY - _this.mouseEvent.initY;
                 }
                 _this.efficacyFrame.moveEfficacy(this.x, this.y);
             }
