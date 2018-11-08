@@ -512,8 +512,12 @@ export default class EfficacyFrame{
         graphics.position.y = y;
         graphics.on("pointerover", ()=>{_this.rotationPock.displayRotationPock()});
         graphics.on("pointerout", ()=>{_this.rotationPock.hideRotationPock()});
-        graphics.on("pointerdown", ()=>{
-            if(btnState) _this.btnState[btnState] = true
+        graphics.on("pointerdown", e=>{
+            if(btnState) _this.btnState[btnState] = true;
+            _this.efficacyContainer.initRotation = _this.efficacyContainer.rotation;
+
+            _this.efficacyInitPosition.x = e.data.originalEvent.x;
+            _this.efficacyInitPosition.y = e.data.originalEvent.y;
         });
         return graphics;
     }
@@ -561,8 +565,8 @@ export default class EfficacyFrame{
     }
     getFrameCenter(){
         return {
-            x: (this.efficacyFrame.squaresEfficacy[4].x + this.efficacyFrame.squaresEfficacy[0].x) / 2 + this.efficacyContainer.position.x,
-            y: (this.efficacyFrame.squaresEfficacy[4].y + this.efficacyFrame.squaresEfficacy[0].y) / 2 + this.efficacyContainer.position.y
+            x: (this.squaresEfficacy[4].x + this.squaresEfficacy[0].x) / 2 + this.efficacyContainer.position.x,
+            y: (this.squaresEfficacy[4].y + this.squaresEfficacy[0].y) / 2 + this.efficacyContainer.position.y
         };
     }
     /**
@@ -599,7 +603,7 @@ export default class EfficacyFrame{
             this.createSquare(15, 15+this.efficacyFrameSize.height, "leftBottom"),
             this.createSquare(15, 15+this.efficacyFrameSize.height/2, "leftCenter"),
 
-            this.createCircle(this.efficacyFrameSize.width/2+15, 5, "rotation"),
+            this.createCircle(this.efficacyFrameSize.width/2+15, 0, "rotation"),
             this.createSquare(0, 0),
             this.createSquare(this.efficacyFrameSize.width+30, 0),
             this.createRemove(this.efficacyFrameSize.width+30, this.efficacyFrameSize.height+30),

@@ -18,7 +18,11 @@ export default class RotationPock{
         let graphics = new PIXI.Graphics();
         graphics.lineStyle(1, 0x2C3E50, 1);
         graphics.beginFill(0xFF0000, 0.05);
-        graphics.drawCircle(0, 0, this.computedRadius(this.efficacyFrame.efficacyFrameSize.width, this.efficacyFrame.efficacyFrameSize.height));
+        graphics.drawCircle(
+            (this.efficacyFrame.efficacyFrameSize.width+15)/2,
+            (this.efficacyFrame.efficacyFrameSize.height+15)/2,
+            this.computedRadius(this.efficacyFrame.efficacyFrameSize.width, this.efficacyFrame.efficacyFrameSize.height)
+        );
         graphics.endFill();
 
         this._graphics = graphics;
@@ -43,7 +47,16 @@ export default class RotationPock{
 
     }
     rotationMove(e, efficacyInitPosition){
-        let {x, y} = this.efficacyFrame.getFrameCenter();
-        let rotationAngle = Math.atan((e.x-x)/(e.y-y)) - Math.atan((efficacyInitPosition.x - x) / (efficacyInitPosition.y - y));
+        let widthMove = e.x - efficacyInitPosition.x ;
+        let heightMove = e.y - efficacyInitPosition.y;
+
+        let circleX = Math.sin(this.efficacyFrame.efficacyContainer.initRotation) * (this.efficacyFrame.efficacyFrameSize.width/2+15);
+        let circleY = Math.cos(this.efficacyFrame.efficacyContainer.initRotation) * (this.efficacyFrame.efficacyFrameSize.height/2+15);
+
+        if(circleX+widthMove>0){
+            this.efficacyFrame.efficacyContainer.rotation = Math.PI/2-Math.atan((circleY-heightMove)/(circleX+widthMove));
+        }else if(circleX+widthMove<0){
+            this.efficacyFrame.efficacyContainer.rotation = Math.PI*3/2-Math.atan((circleY-heightMove)/(circleX+widthMove));
+        }
     }
 }
