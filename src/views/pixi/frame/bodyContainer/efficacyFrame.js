@@ -343,19 +343,19 @@ export default class EfficacyFrame{
                 let rb_x = (bunny.position.x - bunny.rb[0]) * Math.cos(bunny.rotation * 180 / Math.PI) - (bunny.position.y - bunny.rb[1]) * Math.sin(bunny.rotation * 180 / Math.PI) + bunny.rb[0];
                 let rb_y = (bunny.position.x - bunny.rb[0]) * Math.sin(bunny.rotation * 180 / Math.PI) - (bunny.position.y - bunny.rb[1]) * Math.cos(bunny.rotation * 180 / Math.PI) + bunny.rb[1];
 
-                if(bunny.rotation % (Math.PI*2) > 0 && bunny.rotation % (Math.PI*2) < (Math.PI/2)){
+                if(bunny.rotation % (Math.PI*2) > 0 && bunny.rotation % (Math.PI*2) <= (Math.PI/2)){
                     // 0-90dep
                     new_lt = [lb_x, lt_y];
                     new_rt = [rt_x, lt_y];
                     new_rb = [rt_x, rb_y];
                     new_lb = [lb_x, rb_y];
-                }else if(bunny.rotation % (Math.PI*2) > (Math.PI/2) && bunny.rotation % (Math.PI*2) < (Math.PI)){
+                }else if(bunny.rotation % (Math.PI*2) > (Math.PI/2) && bunny.rotation % (Math.PI*2) <= (Math.PI)){
                     // 90-180dep
                     new_lt = [rb_x, lb_y];
                     new_rt = [lt_x, lb_y];
                     new_rb = [lt_x, rt_y];
                     new_lb = [rb_x, rt_y];
-                }else if(bunny.rotation % (Math.PI*2) > (Math.PI) && bunny.rotation % (Math.PI*2) < (Math.PI * 3 / 2)){
+                }else if(bunny.rotation % (Math.PI*2) > (Math.PI) && bunny.rotation % (Math.PI*2) <= (Math.PI * 3 / 2)){
                     // 180-270dep
                     new_lt = [rt_x, rb_y];
                     new_rt = [lb_x, rb_y];
@@ -407,6 +407,15 @@ export default class EfficacyFrame{
      * @returns {{x, y}|*}
      */
     efficacyGetAnchor(bunny, efficacyAnchorPosition){
+        console.log(bunny.initSizeAndPosition.width,
+            bunny.initSizeAndPosition.height,
+            bunny.initSizeAndPosition.x,
+            bunny.initSizeAndPosition.y,
+            {
+                x: bunny.anchor.x,
+                y: bunny.anchor.y
+            },
+            efficacyAnchorPosition);
         return this.computedAnchor(
             bunny.initSizeAndPosition.width,
             bunny.initSizeAndPosition.height,
@@ -518,6 +527,14 @@ export default class EfficacyFrame{
 
             _this.efficacyInitPosition.x = e.data.originalEvent.x;
             _this.efficacyInitPosition.y = e.data.originalEvent.y;
+
+            let frameCenter = this.getFrameCenter();
+
+            this.bunnySelect.forEach(bunny =>{
+                let anchor = this.efficacyGetAnchor(bunny, frameCenter);
+                console.log("anchor: ", anchor);
+                bunny.anchor.set(anchor.x, anchor.y);
+            })
         });
         return graphics;
     }
@@ -564,9 +581,13 @@ export default class EfficacyFrame{
         return removeContainer;
     }
     getFrameCenter(){
+        // return {
+        //     x: (this.squaresEfficacy[4].x + this.squaresEfficacy[0].x) / 2 + this.efficacyContainer.position.x,
+        //     y: (this.squaresEfficacy[4].y + this.squaresEfficacy[0].y) / 2 + this.efficacyContainer.position.y
+        // };
         return {
-            x: (this.squaresEfficacy[4].x + this.squaresEfficacy[0].x) / 2 + this.efficacyContainer.position.x,
-            y: (this.squaresEfficacy[4].y + this.squaresEfficacy[0].y) / 2 + this.efficacyContainer.position.y
+            x: this.efficacyContainer.position.x,
+            y: this.efficacyContainer.position.y
         };
     }
     /**
@@ -580,6 +601,8 @@ export default class EfficacyFrame{
         this.clearEfficacy();
 
         let {top, right, bottom, left} = this.efficacyMaxSize(_this.bunnySelect);
+
+        console.log(bottom, top, right,left, bottom-top, right-left);
 
 
         this.efficacyFrameSize.width = right - left;

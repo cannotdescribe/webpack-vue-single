@@ -28,7 +28,14 @@ export default class BodyContainer{
         }
         this.mouseup = e=>{
             if(this.imgSrcReference){
-                this.bunnyContainer.addChild(this.nodeSpriteChange({imgSrc: this.imgSrcReference, x:e.offsetX, y:e.offsetY}));
+                let bunny = this.nodeSpriteChange({imgSrc: this.imgSrcReference, x:e.offsetX, y:e.offsetY});
+                this.bunnyContainer.addChild(bunny);
+
+                bunny.initSizeAndPosition = {};
+                bunny.initSizeAndPosition.width = bunny.width;
+                bunny.initSizeAndPosition.height = bunny.height;
+                bunny.rotation = Math.PI/4;
+
                 this.imgSrcReference = null;
             }
         }
@@ -136,10 +143,8 @@ export default class BodyContainer{
                 }
             }
             if(!clickSelected){
-                bunny.initSizeAndPosition = {
-                    x: bunny.position.x,
-                    y: bunny.position.y
-                };
+                bunny.initSizeAndPosition.x = bunny.position.x;
+                bunny.initSizeAndPosition.y = bunny.position.y;
                 if(_this.isCtrlDown){
                     _this.bunnySelect.push(bunny);
                 }else{

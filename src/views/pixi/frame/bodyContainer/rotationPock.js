@@ -46,7 +46,7 @@ export default class RotationPock{
     recoverAnchorAndPock(){
 
     }
-    rotationMove(e, efficacyInitPosition){
+    moveRotation(e, efficacyInitPosition){
         let widthMove = e.x - efficacyInitPosition.x ;
         let heightMove = e.y - efficacyInitPosition.y;
 
@@ -54,9 +54,18 @@ export default class RotationPock{
         let circleY = Math.cos(this.efficacyFrame.efficacyContainer.initRotation) * (this.efficacyFrame.efficacyFrameSize.height/2+15);
 
         if(circleX+widthMove>0){
-            this.efficacyFrame.efficacyContainer.rotation = Math.PI/2-Math.atan((circleY-heightMove)/(circleX+widthMove));
+            return Math.PI/2-Math.atan((circleY-heightMove)/(circleX+widthMove));
         }else if(circleX+widthMove<0){
-            this.efficacyFrame.efficacyContainer.rotation = Math.PI*3/2-Math.atan((circleY-heightMove)/(circleX+widthMove));
+            return Math.PI*3/2-Math.atan((circleY-heightMove)/(circleX+widthMove));
         }
+    }
+    rotationMove(e, efficacyInitPosition){
+        let moveRotation = this.moveRotation(e, efficacyInitPosition);
+        this.efficacyFrame.efficacyContainer.rotation = moveRotation;
+
+        this.efficacyFrame.bunnySelect.forEach(bunny =>{
+
+            bunny.rotation = moveRotation;
+        })
     }
 }
