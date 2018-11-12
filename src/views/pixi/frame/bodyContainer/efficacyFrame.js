@@ -316,7 +316,7 @@ export default class EfficacyFrame{
      * @param bunnys
      * @returns {{top: *, right: *, bottom: *, left: *}}
      */
-    efficacyMaxSize(bunnys){
+    efficacyMaxSize(bunnys, rotation){
         let left , right , top , bottom ;
         for(let bunny of bunnys){
             let new_lt, new_rt, new_lb, new_rb ;
@@ -330,18 +330,26 @@ export default class EfficacyFrame{
              * y0= (x - rx0)*sin(a) + (y - ry0)*cos(a) + ry0 ;
              * 参考: https://jingyan.baidu.com/article/2c8c281dfbf3dd0009252a7b.html
              */
+
+            let ro = bunny.rotation;
+
+            // console.log(ro);
+
+
             if(bunny.rotation !== 0){
-                let lt_x = (bunny.position.x - bunny.lt[0]) * Math.cos(bunny.rotation * 180 / Math.PI) - (bunny.position.y - bunny.lt[1]) * Math.sin(bunny.rotation * 180 / Math.PI) + bunny.lt[0];
-                let lt_y = (bunny.position.x - bunny.lt[0]) * Math.sin(bunny.rotation * 180 / Math.PI) - (bunny.position.y - bunny.lt[1]) * Math.cos(bunny.rotation * 180 / Math.PI) + bunny.lt[1];
+                let lt_x = (bunny.lt[0] - bunny.position.x) * Math.cos(ro) - (bunny.lt[1] - bunny.position.y) * Math.sin(ro) + bunny.position.x;
+                let lt_y = (bunny.lt[0] - bunny.position.x) * Math.sin(ro) + (bunny.lt[1] - bunny.position.y) * Math.cos(ro) + bunny.position.y;
 
-                let rt_x = (bunny.position.x - bunny.rt[0]) * Math.cos(bunny.rotation * 180 / Math.PI) - (bunny.position.y - bunny.rt[1]) * Math.sin(bunny.rotation * 180 / Math.PI) + bunny.rt[0];
-                let rt_y = (bunny.position.x - bunny.rt[0]) * Math.sin(bunny.rotation * 180 / Math.PI) - (bunny.position.y - bunny.rt[1]) * Math.cos(bunny.rotation * 180 / Math.PI) + bunny.rt[1];
+                let rt_x = (bunny.rt[0] - bunny.position.x) * Math.cos(ro) - (bunny.rt[1] - bunny.position.y) * Math.sin(ro) + bunny.position.x;
+                let rt_y = (bunny.rt[0] - bunny.position.x) * Math.sin(ro) + (bunny.rt[1] - bunny.position.y) * Math.cos(ro) + bunny.position.y;
 
-                let lb_x = (bunny.position.x - bunny.lb[0]) * Math.cos(bunny.rotation * 180 / Math.PI) - (bunny.position.y - bunny.lb[1]) * Math.sin(bunny.rotation * 180 / Math.PI) + bunny.lb[0];
-                let lb_y = (bunny.position.x - bunny.lb[0]) * Math.sin(bunny.rotation * 180 / Math.PI) - (bunny.position.y - bunny.lb[1]) * Math.cos(bunny.rotation * 180 / Math.PI) + bunny.lb[1];
+                let lb_x = (bunny.lb[0] - bunny.position.x) * Math.cos(ro) - (bunny.lb[1] - bunny.position.y) * Math.sin(ro) + bunny.position.x;
+                let lb_y = (bunny.lb[0] - bunny.position.x) * Math.sin(ro) + (bunny.lb[1] - bunny.position.y) * Math.cos(ro) + bunny.position.y;
 
-                let rb_x = (bunny.position.x - bunny.rb[0]) * Math.cos(bunny.rotation * 180 / Math.PI) - (bunny.position.y - bunny.rb[1]) * Math.sin(bunny.rotation * 180 / Math.PI) + bunny.rb[0];
-                let rb_y = (bunny.position.x - bunny.rb[0]) * Math.sin(bunny.rotation * 180 / Math.PI) - (bunny.position.y - bunny.rb[1]) * Math.cos(bunny.rotation * 180 / Math.PI) + bunny.rb[1];
+                let rb_x = (bunny.rb[0] - bunny.position.x) * Math.cos(ro) - (bunny.rb[1] - bunny.position.y) * Math.sin(ro) + bunny.position.x;
+                let rb_y = (bunny.rb[0] - bunny.position.x) * Math.sin(ro) + (bunny.rb[1] - bunny.position.y) * Math.cos(ro) + bunny.position.y;
+
+                console.log(lt_x, lt_y, rt_x, rt_y, lb_x, lb_y, rb_x, rb_y);
 
                 if(bunny.rotation % (Math.PI*2) > 0 && bunny.rotation % (Math.PI*2) <= (Math.PI/2)){
                     // 0-90dep
@@ -407,15 +415,15 @@ export default class EfficacyFrame{
      * @returns {{x, y}|*}
      */
     efficacyGetAnchor(bunny, efficacyAnchorPosition){
-        console.log(bunny.initSizeAndPosition.width,
-            bunny.initSizeAndPosition.height,
-            bunny.initSizeAndPosition.x,
-            bunny.initSizeAndPosition.y,
-            {
-                x: bunny.anchor.x,
-                y: bunny.anchor.y
-            },
-            efficacyAnchorPosition);
+        // console.log(bunny.initSizeAndPosition.width,
+        //     bunny.initSizeAndPosition.height,
+        //     bunny.initSizeAndPosition.x,
+        //     bunny.initSizeAndPosition.y,
+        //     {
+        //         x: bunny.anchor.x,
+        //         y: bunny.anchor.y
+        //     },
+        //     efficacyAnchorPosition);
         return this.computedAnchor(
             bunny.initSizeAndPosition.width,
             bunny.initSizeAndPosition.height,
@@ -532,7 +540,6 @@ export default class EfficacyFrame{
 
             this.bunnySelect.forEach(bunny =>{
                 let anchor = this.efficacyGetAnchor(bunny, frameCenter);
-                console.log("anchor: ", anchor);
                 bunny.anchor.set(anchor.x, anchor.y);
             })
         });
@@ -599,10 +606,16 @@ export default class EfficacyFrame{
     compose(){
         let _this = this;
         this.clearEfficacy();
+        let lastBunny = {
+            rotation: 0
+        }
+        if(this.bunnySelect.length > 0){
+            lastBunny = this.bunnySelect[this.bunnySelect.length-1];
+        }
 
-        let {top, right, bottom, left} = this.efficacyMaxSize(_this.bunnySelect);
+        let {top, right, bottom, left} = this.efficacyMaxSize(_this.bunnySelect, lastBunny.rotation);
 
-        console.log(bottom, top, right,left, bottom-top, right-left);
+        // console.log(bottom, top, right,left, bottom-top, right-left);
 
 
         this.efficacyFrameSize.width = right - left;
@@ -643,7 +656,9 @@ export default class EfficacyFrame{
         this.efficacyContainer.position.x = (right+left)/2;
         this.efficacyContainer.position.y = (top+bottom)/2;
 
-        console.log(this.efficacyContainer.position);
+        this.efficacyContainer.rotation = lastBunny.rotation;
+
+        // console.log(this.efficacyContainer.position);
         // console.log("compose end:  ", this.efficacyContainer.position.x, this.efficacyContainer.position.y);
 
 
