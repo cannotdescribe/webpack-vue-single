@@ -310,90 +310,69 @@ export default class EfficacyFrame{
         this.efficacyContainer.removeChildren(0, this.efficacyContainer.children.length);
     }
 
-    /**5
+    /**
+     * x0= (x - rx0)*cos(a) - (y - ry0)*sin(a) + rx0 ;
+     * y0= (x - rx0)*sin(a) + (y - ry0)*cos(a) + ry0 ;
+     * 参考: https://jingyan.baidu.com/article/2c8c281dfbf3dd0009252a7b.html
+     *
+     * @param position {{x: *, y:*}} 点的初始位置
+     * @param origin {{x: *, y:*}} 点的旋转中心
+     * @param rotation int rad 点的旋转角度
+     * @returns {{x: *, y: *}} 结果
+     */
+    rotationPoint(position, origin, rotation){
+        return {
+            x: (position.x - origin.x) * Math.cos(rotation) - (position.y - origin.y) * Math.sin(rotation) + origin.x,
+            y: (position.x - origin.x) * Math.sin(rotation) + (position.y - origin.y) * Math.cos(rotation) + origin.y
+        }
+    }
+
+    /**
+     * 求出所有点位的最左顶点，上顶点，右定点，下定点
+     *
+     * @param points
+     * @returns {{left: *, top: *, right: *, bottom: *}}
+     */
+    distributeDirection(points){
+        let left, top, right, bottom;
+        let transverseReference = points.sort((a0, a1)=>a0.x >a1.x);
+        left = transverseReference[0];
+        right = transverseReference[points.length-1];
+        let verticalReference = points.sort((a0, a1)=>a0.y >a1.y);
+        top = verticalReference[0];
+        bottom = verticalReference[points.length-1];
+        return {left, top, right, bottom};
+    }
+
+    /**
      * 求出实际efficacyFrame所占用的宽高
      * 和bunny的宽高，旋转角度都有关系
-     * @param bunnys
+     * @param bunnies
      * @returns {{top: *, right: *, bottom: *, left: *}}
      */
-    efficacyMaxSize(bunnys, rotation){
-        let left , right , top , bottom ;
-        for(let bunny of bunnys){
-            let new_lt, new_rt, new_lb, new_rb ;
-            bunny.lt = [bunny.position.x - bunny.width/2, bunny.position.y - bunny.height/2];
-            bunny.rt = [bunny.position.x + bunny.width/2, bunny.position.y - bunny.height/2];
+    efficacyMaxSize(bunnies, rotation){
+        let points = [];
+        for(let bunny of bunnies){
+            bunny.lt = {x: bunny.position.x - bunny.width/2, y: bunny.position.y - bunny.height/2};
+            bunny.rt = {x: bunny.position.x + bunny.width/2, y: bunny.position.y - bunny.height/2};
+            bunny.lb = {x: bunny.position.x - bunny.width/2, y: bunny.position.y + bunny.height/2};
+            bunny.rb = {x: bunny.position.x + bunny.width/2, y: bunny.position.y + bunny.height/2};
 
-            bunny.lb = [bunny.position.x - bunny.width/2, bunny.position.y + bunny.height/2];
-            bunny.rb = [bunny.position.x + bunny.width/2, bunny.position.y + bunny.height/2];
-            /**
-             * x0= (x - rx0)*cos(a) - (y - ry0)*sin(a) + rx0 ;
-             * y0= (x - rx0)*sin(a) + (y - ry0)*cos(a) + ry0 ;
-             * 参考: https://jingyan.baidu.com/article/2c8c281dfbf3dd0009252a7b.html
-             */
-
-            let ro = bunny.rotation;
-
-            // console.log(ro);
-
-
-            if(bunny.rotation !== 0){
-                let lt_x = (bunny.lt[0] - bunny.position.x) * Math.cos(ro) - (bunny.lt[1] - bunny.position.y) * Math.sin(ro) + bunny.position.x;
-                let lt_y = (bunny.lt[0] - bunny.position.x) * Math.sin(ro) + (bunny.lt[1] - bunny.position.y) * Math.cos(ro) + bunny.position.y;
-
-                let rt_x = (bunny.rt[0] - bunny.position.x) * Math.cos(ro) - (bunny.rt[1] - bunny.position.y) * Math.sin(ro) + bunny.position.x;
-                let rt_y = (bunny.rt[0] - bunny.position.x) * Math.sin(ro) + (bunny.rt[1] - bunny.position.y) * Math.cos(ro) + bunny.position.y;
-
-                let lb_x = (bunny.lb[0] - bunny.position.x) * Math.cos(ro) - (bunny.lb[1] - bunny.position.y) * Math.sin(ro) + bunny.position.x;
-                let lb_y = (bunny.lb[0] - bunny.position.x) * Math.sin(ro) + (bunny.lb[1] - bunny.position.y) * Math.cos(ro) + bunny.position.y;
-
-                let rb_x = (bunny.rb[0] - bunny.position.x) * Math.cos(ro) - (bunny.rb[1] - bunny.position.y) * Math.sin(ro) + bunny.position.x;
-                let rb_y = (bunny.rb[0] - bunny.position.x) * Math.sin(ro) + (bunny.rb[1] - bunny.position.y) * Math.cos(ro) + bunny.position.y;
-
-                console.log(lt_x, lt_y, rt_x, rt_y, lb_x, lb_y, rb_x, rb_y);
-
-                if(bunny.rotation % (Math.PI*2) > 0 && bunny.rotation % (Math.PI*2) <= (Math.PI/2)){
-                    // 0-90dep
-                    new_lt = [lb_x, lt_y];
-                    new_rt = [rt_x, lt_y];
-                    new_rb = [rt_x, rb_y];
-                    new_lb = [lb_x, rb_y];
-                }else if(bunny.rotation % (Math.PI*2) > (Math.PI/2) && bunny.rotation % (Math.PI*2) <= (Math.PI)){
-                    // 90-180dep
-                    new_lt = [rb_x, lb_y];
-                    new_rt = [lt_x, lb_y];
-                    new_rb = [lt_x, rt_y];
-                    new_lb = [rb_x, rt_y];
-                }else if(bunny.rotation % (Math.PI*2) > (Math.PI) && bunny.rotation % (Math.PI*2) <= (Math.PI * 3 / 2)){
-                    // 180-270dep
-                    new_lt = [rt_x, rb_y];
-                    new_rt = [lb_x, rb_y];
-                    new_rb = [lb_x, lt_y];
-                    new_lb = [rt_x, lt_y];
-                }else{
-                    //270-360dep
-                    new_lt = [rb_x, rt_y];
-                    new_rt = [lt_x, rt_y];
-                    new_rb = [lt_x, lb_y];
-                    new_lb = [rb_x, lb_y];
-                }
-            }else{
-                new_lt = bunny.lt;
-                new_rt = bunny.rt;
-                new_rb = bunny.rb;
-                new_lb = bunny.lb;
-            }
-
-            if(left===undefined) left = new_lt[0];
-            if(right===undefined) right = new_rb[0];
-            if(top===undefined) top = new_rt[1];
-            if(bottom===undefined) bottom = new_lb[1];
-
-            if(left > new_lt[0]) left = new_lt[0];
-            if(right < new_rb[0]) right = new_rb[0];
-            if(top > new_rt[1]) top = new_rt[1];
-            if(bottom < new_lb[1]) bottom = new_lb[1];
+            let rotation = bunny.rotation;
+            let lt = this.rotationPoint(bunny.lt, bunny.position, rotation);
+            let rt = this.rotationPoint(bunny.rt, bunny.position, rotation);
+            let rb = this.rotationPoint(bunny.rb, bunny.position, rotation);
+            let lb = this.rotationPoint(bunny.lb, bunny.position, rotation);
+            points.push(lt, rt, rb, lb);
         }
-        return {top: top, right: right, bottom: bottom, left: left};
+        let result = this.distributeDirection(points);
+
+        // y: b - a * Math.tan(rotation);
+        // x: a + b / Math.cot(rotation);
+
+
+        return "fuck";
+        // return {top: top, right: right, bottom: bottom, left: left};
     }
     /**
      * 计算新的anchor
