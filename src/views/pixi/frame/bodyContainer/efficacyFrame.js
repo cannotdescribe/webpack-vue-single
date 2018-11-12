@@ -368,8 +368,7 @@ export default class EfficacyFrame{
         let result = this.distributeDirection(points);
 
         // y: b - a * Math.tan(rotation);
-        // x: a + b / Math.cot(rotation);
-
+        // x: a - b / Math.tan(rotation);
 
         return "fuck";
         // return {top: top, right: right, bottom: bottom, left: left};
