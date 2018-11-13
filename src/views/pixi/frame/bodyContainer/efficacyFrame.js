@@ -330,18 +330,78 @@ export default class EfficacyFrame{
     /**
      * 求出所有点位的最左顶点，上顶点，右定点，下定点
      *
+     * 公式:
+     *
+     * x: a - b / Math.tan(rotation);
+     * y: b - a * Math.tan(rotation);
      * @param points
+     * @param rotation 旋转角度
      * @returns {{left: *, top: *, right: *, bottom: *}}
      */
-    distributeDirection(points){
-        let left, top, right, bottom;
-        let transverseReference = points.sort((a0, a1)=>a0.x >a1.x);
-        left = transverseReference[0];
-        right = transverseReference[points.length-1];
-        let verticalReference = points.sort((a0, a1)=>a0.y >a1.y);
-        top = verticalReference[0];
-        bottom = verticalReference[points.length-1];
+    distributeDirection(points, rotation){
+        let left={x:0, y:0}, top={x:0, y:0}, right={x:0, y:0}, bottom={x:0, y:0};
+        let transverseReference = points.sort((a0, a1)=>{
+            if(0<rotation && rotation<=Math.PI/4 || Math.PI*3/4<rotation && rotation<=Math.PI*5/4 || Math.PI*7/4<rotation && rotation<=2*Math.PI){
+                return (a0.x - a0.y / Math.tan(Math.PI/2 - rotation)) < (a1.x - a1.y / Math.tan(rotation));
+            }else{
+                return (a0.x - a0.y / Math.tan(Math.PI/2 - rotation)) > (a1.x - a1.y / Math.tan(rotation));
+            }
+            // return (a0.x - a0.y / Math.tan(Math.PI / 2 - rotation)) > (a1.x - a1.y / Math.tan(Math.PI / 2 - rotation));
+        });
+        left.x = transverseReference[0].x;
+        left.y = transverseReference[0].y;
+        right.x = transverseReference[points.length-1].x;
+        right.y = transverseReference[points.length-1].y;
+        let verticalReference = points.sort((a0, a1)=>{
+            if(0<rotation && rotation<=Math.PI/4 || Math.PI*3/4<rotation && rotation<=Math.PI*5/4 || Math.PI*7/4<rotation && rotation<=2*Math.PI){
+                return (a0.y - a0.x / Math.tan(rotation)) < (a1.y - a1.x * Math.tan(rotation));
+            }else{
+                return (a0.y - a0.x / Math.tan(rotation)) > (a1.y - a1.x * Math.tan(rotation));
+            }
+        });
+        top.x = verticalReference[0].x;
+        top.y = verticalReference[0].y;
+        bottom.x = verticalReference[points.length-1].x;
+        bottom.y = verticalReference[points.length-1].y;
         return {left, top, right, bottom};
+    }
+
+
+    /**
+     * 一个直角坐标系中，存在a, b两点，存在一个与x轴夹角为θ的线l，这条线过b点，a点可过l做条垂线，求垂足坐标
+     *
+     * @param point
+     * @returns {{a0: *, a1: *, a2: *, a3: *}}
+     */
+    footPoint(a, b, rotation){
+        let od ;
+        if(b.x-a.x === 0){
+            od = Math.PI / 2;
+        }else{
+            od = Math.atan((b.y - a.y) / (b.x - a.x));
+        }
+        // console.log((od+rotation)/Math.PI, od/Math.PI, (Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2))), a, b);
+        console.log("rotation: ", rotation/Math.PI);
+        console.log(
+            "over: ",
+            {
+                x: b.x - (Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2)) * Math.cos(od-rotation) * Math.cos(rotation)),
+                y: b.y - (Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2)) * Math.cos(od-rotation) * Math.sin(rotation))
+            }
+        );
+        return {
+            x: b.x - (Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2)) * Math.cos(od-rotation) * Math.cos(rotation)),
+            y: b.y - (Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2)) * Math.cos(od-rotation) * Math.sin(rotation))
+        };
+    }
+
+    rectanglePoint(point, rotation){
+        return {
+            leftTop: this.footPoint(point.left, point.top, rotation+Math.PI/2),
+            rightTop: this.footPoint(point.right, point.top, rotation+Math.PI),
+            rightBottom: this.footPoint(point.right, point.bottom, rotation+Math.PI/2),
+            leftBottom: this.footPoint(point.left, point.bottom, rotation)
+        };
     }
 
     /**
@@ -365,13 +425,43 @@ export default class EfficacyFrame{
             let lb = this.rotationPoint(bunny.lb, bunny.position, rotation);
             points.push(lt, rt, rb, lb);
         }
-        let result = this.distributeDirection(points);
+        console.log("dsadasd: ", rotation/Math.PI);
+        let ro = rotation - Math.PI / 6;
+        let result = this.distributeDirection(points, ro);
 
-        // y: b - a * Math.tan(rotation);
-        // x: a - b / Math.tan(rotation);
+        let g1 = this.createTestSquare(result.left.x, result.left.y, "left");
+        let g2 = this.createTestSquare(result.right.x, result.right.y, "right");
+        let g3 = this.createTestSquare(result.top.x, result.top.y, "top");
+        let g4 = this.createTestSquare(result.bottom.x, result.bottom.y, "bottom");
 
-        return "fuck";
-        // return {top: top, right: right, bottom: bottom, left: left};
+        this.app.stage.addChild(g1);
+        this.app.stage.addChild(g2);
+        this.app.stage.addChild(g3);
+        this.app.stage.addChild(g4);
+        return {};
+        /*
+
+        let {leftTop, rightTop, rightBottom, leftBottom} = this.rectanglePoint(result, ro);
+
+        console.log({leftTop, rightTop, rightBottom, leftBottom});
+        let centerPoint = {x: (leftTop.x+rightBottom.x)/2, y: (leftTop.y+rightBottom.y)/2};
+        let leftTopRotated = this.rotationPoint(leftTop, centerPoint, -ro);
+        let rightBottomRotated = this.rotationPoint(rightBottom, centerPoint, -ro);
+
+        console.log("res: ", {
+            top: leftTopRotated.y,
+            left: leftTopRotated.x,
+            right: rightBottomRotated.x,
+            bottom: rightBottomRotated.y
+        });
+
+        return {
+            top: leftTopRotated.y,
+            left: leftTopRotated.x,
+            right: rightBottomRotated.x,
+            bottom: rightBottomRotated.y
+        }
+        */
     }
     /**
      * 计算新的anchor
@@ -413,6 +503,14 @@ export default class EfficacyFrame{
             },
             efficacyAnchorPosition
         );
+    }
+
+    createTestSquare(x, y, text) {
+        let t = new PIXI.Text(text,{fontFamily : 'Arial', fontSize: 24, fill : 0xff1010, align : 'center'});
+        t.position.x = x;
+        t.position.y = y;
+        t.anchor.set(0.5);
+        return t;
     }
 
     createSquare(x, y, btnState) {
@@ -581,14 +679,18 @@ export default class EfficacyFrame{
      *
      *  TODO ##注意:目前不支持bunny的append动作##
      */
-    compose(){
+    compose(selectBunny){
         let _this = this;
         this.clearEfficacy();
         let lastBunny = {
             rotation: 0
         }
-        if(this.bunnySelect.length > 0){
-            lastBunny = this.bunnySelect[this.bunnySelect.length-1];
+        if(selectBunny){
+            lastBunny = selectBunny;
+        }else{
+            if(this.bunnySelect.length > 0){
+                lastBunny = this.bunnySelect[this.bunnySelect.length-1];
+            }
         }
 
         let {top, right, bottom, left} = this.efficacyMaxSize(_this.bunnySelect, lastBunny.rotation);

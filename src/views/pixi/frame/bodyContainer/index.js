@@ -34,7 +34,7 @@ export default class BodyContainer{
                 bunny.initSizeAndPosition = {};
                 bunny.initSizeAndPosition.width = bunny.width;
                 bunny.initSizeAndPosition.height = bunny.height;
-                bunny.rotation = Math.PI/4;
+                bunny.rotation = Math.PI/3+ Math.PI/2;
 
                 this.imgSrcReference = null;
             }
@@ -152,7 +152,7 @@ export default class BodyContainer{
                     _this.bunnySelect.push(bunny);
                 }
             }
-            _this.efficacyFrame.compose();
+            _this.efficacyFrame.compose(bunny);
             _this.efficacyFrame.startEfficacy(this.x, this.y);
         }
 
