@@ -339,26 +339,24 @@ export default class EfficacyFrame{
      * @returns {{left: *, top: *, right: *, bottom: *}}
      */
     distributeDirection(points, rotation){
+        console.log("rotation: ", rotation/Math.PI);
         let left={x:0, y:0}, top={x:0, y:0}, right={x:0, y:0}, bottom={x:0, y:0};
         let transverseReference = points.sort((a0, a1)=>{
-            if(0<rotation && rotation<=Math.PI/4 || Math.PI*3/4<rotation && rotation<=Math.PI*5/4 || Math.PI*7/4<rotation && rotation<=2*Math.PI){
-                return (a0.x - a0.y / Math.tan(Math.PI/2 - rotation)) < (a1.x - a1.y / Math.tan(rotation));
-            }else{
-                return (a0.x - a0.y / Math.tan(Math.PI/2 - rotation)) > (a1.x - a1.y / Math.tan(rotation));
-            }
-            // return (a0.x - a0.y / Math.tan(Math.PI / 2 - rotation)) > (a1.x - a1.y / Math.tan(Math.PI / 2 - rotation));
+            return (a0.x - a0.y / Math.tan(Math.PI/2 + rotation)) > (a1.x - a1.y / Math.tan(Math.PI/2 + rotation));
         });
+        for(let tr of transverseReference){
+            console.log("tr: ", tr.x - tr.y / Math.tan(Math.PI/2 - rotation), tr.x);
+        }
         left.x = transverseReference[0].x;
         left.y = transverseReference[0].y;
         right.x = transverseReference[points.length-1].x;
         right.y = transverseReference[points.length-1].y;
         let verticalReference = points.sort((a0, a1)=>{
-            if(0<rotation && rotation<=Math.PI/4 || Math.PI*3/4<rotation && rotation<=Math.PI*5/4 || Math.PI*7/4<rotation && rotation<=2*Math.PI){
-                return (a0.y - a0.x / Math.tan(rotation)) < (a1.y - a1.x * Math.tan(rotation));
-            }else{
-                return (a0.y - a0.x / Math.tan(rotation)) > (a1.y - a1.x * Math.tan(rotation));
-            }
+            return (a0.y - a0.x * Math.tan(rotation)) > (a1.y - a1.x * Math.tan(rotation));
         });
+        for(let vr of verticalReference){
+            console.log("vr: ", vr.y - vr.x * Math.tan(rotation), vr.y);
+        }
         top.x = verticalReference[0].x;
         top.y = verticalReference[0].y;
         bottom.x = verticalReference[points.length-1].x;
@@ -380,19 +378,20 @@ export default class EfficacyFrame{
         }else{
             od = Math.atan((b.y - a.y) / (b.x - a.x));
         }
-        // console.log((od+rotation)/Math.PI, od/Math.PI, (Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2))), a, b);
         console.log("rotation: ", rotation/Math.PI);
-        console.log(
-            "over: ",
-            {
-                x: b.x - (Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2)) * Math.cos(od-rotation) * Math.cos(rotation)),
-                y: b.y - (Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2)) * Math.cos(od-rotation) * Math.sin(rotation))
-            }
-        );
-        return {
-            x: b.x - (Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2)) * Math.cos(od-rotation) * Math.cos(rotation)),
-            y: b.y - (Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2)) * Math.cos(od-rotation) * Math.sin(rotation))
-        };
+        let result ;
+        if(0<rotation && rotation<=Math.PI/2 || Math.PI<rotation && rotation<=Math.PI*3/2){
+            result = {
+                x: b.x + (Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2)) * Math.cos(od+rotation) * Math.sin(rotation)),
+                y: b.y - (Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2)) * Math.cos(od+rotation) * Math.cos(rotation))
+            };
+        }else{
+            result = {
+                x: b.x - (Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2)) * Math.cos(od+rotation) * Math.sin(rotation)),
+                y: b.y - (Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2)) * Math.cos(od+rotation) * Math.cos(rotation))
+            };
+        }
+        return result;
     }
 
     rectanglePoint(point, rotation){
@@ -425,10 +424,9 @@ export default class EfficacyFrame{
             let lb = this.rotationPoint(bunny.lb, bunny.position, rotation);
             points.push(lt, rt, rb, lb);
         }
-        console.log("dsadasd: ", rotation/Math.PI);
         let ro = rotation - Math.PI / 6;
         let result = this.distributeDirection(points, ro);
-
+        /*
         let g1 = this.createTestSquare(result.left.x, result.left.y, "left");
         let g2 = this.createTestSquare(result.right.x, result.right.y, "right");
         let g3 = this.createTestSquare(result.top.x, result.top.y, "top");
@@ -439,7 +437,7 @@ export default class EfficacyFrame{
         this.app.stage.addChild(g3);
         this.app.stage.addChild(g4);
         return {};
-        /*
+        */
 
         let {leftTop, rightTop, rightBottom, leftBottom} = this.rectanglePoint(result, ro);
 
@@ -461,7 +459,7 @@ export default class EfficacyFrame{
             right: rightBottomRotated.x,
             bottom: rightBottomRotated.y
         }
-        */
+
     }
     /**
      * 计算新的anchor

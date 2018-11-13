@@ -34,7 +34,8 @@ export default class BodyContainer{
                 bunny.initSizeAndPosition = {};
                 bunny.initSizeAndPosition.width = bunny.width;
                 bunny.initSizeAndPosition.height = bunny.height;
-                bunny.rotation = Math.PI/3+ Math.PI/2;
+                bunny.rotation = Math.PI/3 ;
+                // bunny.rotation = Math.PI/3 ;
 
                 this.imgSrcReference = null;
             }
