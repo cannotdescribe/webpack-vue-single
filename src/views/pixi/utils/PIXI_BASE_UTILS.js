@@ -1,4 +1,4 @@
-export default{
+export default {
     /**
      * 计算新的anchor
      * @param width                  float                  bunny宽
@@ -39,6 +39,8 @@ export default{
     bunnySetNewAnchor(bunny, newAnchor){
         let oldAnchor ={x: bunny.anchor.x, y: bunny.anchor.y};
         bunny.anchor.set(newAnchor.x, newAnchor.y);
+        //TODO 角度 带进去算出结果
+
         bunny.position.x = bunny.position.x + (newAnchor.x - oldAnchor.x) * bunny.width;
         bunny.position.y = bunny.position.y + (newAnchor.y - oldAnchor.y) * bunny.height;
     }

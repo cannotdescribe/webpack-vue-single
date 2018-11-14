@@ -376,41 +376,30 @@ export default class EfficacyFrame{
      * @param point
      * @returns {{a0: *, a1: *, a2: *, a3: *}}
      */
-    footPoint(a, b, rotation){
+    footPoint(a, b, rotation, state){
         let od, result;
         if(b.x-a.x === 0){
             od = Math.PI / 2;
         }else{
             od = Math.atan((b.y - a.y) / (b.x - a.x));
         }
-        //
-        // if(a.x < b.x && a.y < b.y){
-        //     result = {
-        //         x: (b.x - (Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2)) * Math.cos(od - rotation) * Math.cos(rotation))),
-        //         y: (b.y - (Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2)) * Math.cos(od - rotation) * Math.sin(rotation)))
-        //     };
-        // }else if(a.x > b.x && a.y > b.y){
-        //     result = {
-        //         x: (b.x + (Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2)) * Math.cos(od - rotation) * Math.cos(rotation))),
-        //         y: (b.y + (Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2)) * Math.cos(od - rotation) * Math.sin(rotation)))
-        //     };
-        // }else if(a.x < b.x && a.y > b.y){
-        //     result = {
-        //         x: (b.x - (Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2)) * Math.cos(od - rotation) * Math.cos(rotation))),
-        //         y: (b.y - (Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2)) * Math.cos(od - rotation) * Math.sin(rotation)))
-        //     };
-        // }else if(a.x > b.x && a.y < b.y){
-        //     result = {
-        //         x: (b.x + (Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2)) * Math.cos(od - rotation) * Math.cos(rotation))),
-        //         y: (b.y + (Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2)) * Math.cos(od - rotation) * Math.sin(rotation)))
-        //     };
-        // }
-        if(a.x < b.x ){
+/*
+        if(a.x < b.x && a.y < b.y){
             result = {
                 x: (b.x - (Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2)) * Math.cos(od - rotation) * Math.cos(rotation))),
                 y: (b.y - (Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2)) * Math.cos(od - rotation) * Math.sin(rotation)))
             };
-        }else if(a.x > b.x ){
+        }else if(a.x > b.x && a.y > b.y){
+            result = {
+                x: (b.x + (Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2)) * Math.cos(od - rotation) * Math.cos(rotation))),
+                y: (b.y + (Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2)) * Math.cos(od - rotation) * Math.sin(rotation)))
+            };
+        }else if(a.x < b.x && a.y > b.y){
+            result = {
+                x: (b.x - (Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2)) * Math.cos(od - rotation) * Math.cos(rotation))),
+                y: (b.y - (Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2)) * Math.cos(od - rotation) * Math.sin(rotation)))
+            };
+        }else if(a.x > b.x && a.y < b.y){
             result = {
                 x: (b.x + (Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2)) * Math.cos(od - rotation) * Math.cos(rotation))),
                 y: (b.y + (Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2)) * Math.cos(od - rotation) * Math.sin(rotation)))
@@ -421,15 +410,45 @@ export default class EfficacyFrame{
                 y: b.y
             };
         }
+*/
+
+        if(a.x < b.x ){
+            result = {
+                x: (b.x - (Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2)) * Math.cos(od - rotation) * Math.cos(rotation))),
+                y: (b.y - (Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2)) * Math.cos(od - rotation) * Math.sin(rotation)))
+            };
+        }else if(a.x > b.x ){
+            result = {
+                x: (b.x + (Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2)) * Math.cos(od - rotation) * Math.cos(rotation))),
+                y: (b.y + (Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2)) * Math.cos(od - rotation) * Math.sin(rotation)))
+            };
+        }else if(a.x === b.x){
+            if(a.y < b.y){
+                result = {
+                    x: (b.x - (Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2)) * Math.cos(od - rotation) * Math.cos(rotation))),
+                    y: (b.y - (Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2)) * Math.cos(od - rotation) * Math.sin(rotation)))
+                };
+            }else if(a.y > b.y){
+                result = {
+                    x: (b.x + (Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2)) * Math.cos(od - rotation) * Math.cos(rotation))),
+                    y: (b.y + (Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2)) * Math.cos(od - rotation) * Math.sin(rotation)))
+                };
+            }else{
+                result = {
+                    x: b.x,
+                    y: b.y
+                };
+            }
+        }
 
         return result;
     }
 
     rectanglePoint(point, rotation){
         return {
-            leftTop: this.footPoint(point.left, point.top, rotation),
+            leftTop: this.footPoint(point.left, point.top, rotation, "leftTop"),
             rightTop: this.footPoint(point.right, point.top, rotation, "rightTop"),
-            rightBottom: this.footPoint(point.right, point.bottom, rotation),
+            rightBottom: this.footPoint(point.right, point.bottom, rotation, "rightBottom"),
             leftBottom: this.footPoint(point.left, point.bottom, rotation, "leftBottom")
         };
     }
@@ -460,27 +479,27 @@ export default class EfficacyFrame{
         }
         let result = this.distributeDirection(points, rotation);
 
-        // let g1 = this.createTestSquare(result.left.x, result.left.y, "left");
-        // let g2 = this.createTestSquare(result.right.x, result.right.y, "right");
-        // let g3 = this.createTestSquare(result.top.x, result.top.y, "top");
-        // let g4 = this.createTestSquare(result.bottom.x, result.bottom.y, "bottom");
-        // this.testContainer.addChild(g1);
-        // this.testContainer.addChild(g2);
-        // this.testContainer.addChild(g3);
-        // this.testContainer.addChild(g4);
+        let g1 = this.createTestSquare(result.left.x, result.left.y, "left");
+        let g2 = this.createTestSquare(result.right.x, result.right.y, "right");
+        let g3 = this.createTestSquare(result.top.x, result.top.y, "top");
+        let g4 = this.createTestSquare(result.bottom.x, result.bottom.y, "bottom");
+        this.testContainer.addChild(g1);
+        this.testContainer.addChild(g2);
+        this.testContainer.addChild(g3);
+        this.testContainer.addChild(g4);
 
         let {leftTop, rightTop, rightBottom, leftBottom} = this.rectanglePoint(result, rotation);
 
         // let {leftTop, rightTop, rightBottom, leftBottom} = this.rectanglePoint(result, ro);
-        // let gg1 = this.createTestSquare(leftTop.x, leftTop.y, "leftTop");
-        // let gg2 = this.createTestSquare(rightTop.x, rightTop.y, "rightTop");
-        // let gg3 = this.createTestSquare(rightBottom.x, rightBottom.y, "rightBottom");
-        // let gg4 = this.createTestSquare(leftBottom.x, leftBottom.y, "leftBottom");
-        //
-        // this.app.stage.addChild(gg1);
-        // this.app.stage.addChild(gg2);
-        // this.app.stage.addChild(gg3);
-        // this.app.stage.addChild(gg4);
+        let gg1 = this.createTestSquare(leftTop.x, leftTop.y, "leftTop");
+        let gg2 = this.createTestSquare(rightTop.x, rightTop.y, "rightTop");
+        let gg3 = this.createTestSquare(rightBottom.x, rightBottom.y, "rightBottom");
+        let gg4 = this.createTestSquare(leftBottom.x, leftBottom.y, "leftBottom");
+
+        this.testContainer.addChild(gg1);
+        this.testContainer.addChild(gg2);
+        this.testContainer.addChild(gg3);
+        this.testContainer.addChild(gg4);
 
         // console.log({leftTop, rightTop, rightBottom, leftBottom});
 
@@ -729,8 +748,6 @@ export default class EfficacyFrame{
         // console.log("compose start:  ", this.efficacyContainer.position.x, this.efficacyContainer.position.y);
         this.efficacyContainer.position.x = (right+left)/2;
         this.efficacyContainer.position.y = (top+bottom)/2;
-
-        console.log(this.efficacyContainer);
 
         this.efficacyContainer.rotation = lastBunny.rotation===undefined ?0:lastBunny.rotation;
 

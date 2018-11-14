@@ -46,16 +46,12 @@ export default class RotationPock{
     recoverAnchorAndPock(){
 
     }
-    moveRotation(e, efficacyInitPosition){
+    moveRotation(e, efficacyInitPosition, initRotation){
         let widthMove = e.x - efficacyInitPosition.x ;
         let heightMove = e.y - efficacyInitPosition.y;
 
-        console.log("initRotation: ", this.efficacyFrame.efficacyContainer.initRotation);
-
-        console.log(this.efficacyFrame.efficacyFrameSize.width);
-
-        let circleX = Math.sin(this.efficacyFrame.efficacyContainer.initRotation) * (this.efficacyFrame.efficacyFrameSize.width/2);
-        let circleY = Math.cos(this.efficacyFrame.efficacyContainer.initRotation) * (this.efficacyFrame.efficacyFrameSize.height/2);
+        let circleX = Math.sin(initRotation) * (this.efficacyFrame.efficacyFrameSize.width/2);
+        let circleY = Math.cos(initRotation) * (this.efficacyFrame.efficacyFrameSize.height/2);
 
         if(circleX+widthMove>0){
             return Math.PI/2 - Math.atan((circleY-heightMove)/(circleX+widthMove));
@@ -67,12 +63,11 @@ export default class RotationPock{
     }
     //旋转移动响应事件
     rotationMove(e, efficacyInitPosition){
-        let moveRotation = this.moveRotation(e, efficacyInitPosition);
-        console.log("moveRotation: ", moveRotation);
+        let moveRotation = this.moveRotation(e, efficacyInitPosition, this.efficacyFrame.efficacyContainer.initRotation);
         this.efficacyFrame.efficacyContainer.rotation = moveRotation;
 
         this.efficacyFrame.bunnySelect.forEach(bunny =>{
-            bunny.rotation = moveRotation;
+            bunny.rotation = this.moveRotation(e, efficacyInitPosition, bunny.initRotation);
         })
     }
 }

@@ -34,9 +34,9 @@ export default class BodyContainer{
                 bunny.initSizeAndPosition = {};
                 bunny.initSizeAndPosition.width = bunny.width;
                 bunny.initSizeAndPosition.height = bunny.height;
-                bunny.rotation = 0;
-                    // bunny.rotation = Math.PI;
-                // bunny.rotation = Math.PI/3 ;
+                // bunny.rotation = 0;
+                //     bunny.rotation = Math.PI;
+                bunny.rotation = Math.PI/3 ;
 
                 this.imgSrcReference = null;
             }
@@ -106,6 +106,8 @@ export default class BodyContainer{
         texture.baseTexture.scaleMode = PIXI.SCALE_MODES.NEAREST;
         let bunny = new PIXI.Sprite(texture);
         bunny.anchor.set(0.5);
+        bunny.rotation = 0;
+        bunny.initRotation = 0;
         this.nodePositionInit(bunny, node.x, node.y);
         return bunny;
     }
