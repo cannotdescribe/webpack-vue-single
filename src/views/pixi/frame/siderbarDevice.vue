@@ -51,7 +51,11 @@
                 return {x: x-this.maskImg.imgWidth/2, y:y-this.maskImg.imgHeight/2};
             },
             nodeList(){
-                let imgSrcs = ["http://127.0.0.1:8090/static/pixitest/bunny.png", "http://127.0.0.1:8090/static/pixitest/testImage.png"];
+                let imgSrcs = [
+                    "http://127.0.0.1:8090/static/pixitest/bunny.png",
+                    "http://127.0.0.1:8090/static/pixitest/testImage.png",
+                    "http://127.0.0.1:8090/static/pixitest/dog.jpg"
+                ];
                 for(let imgSrc of imgSrcs){
                     this.node(imgSrc)
                 }

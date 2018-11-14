@@ -50,21 +50,28 @@ export default class RotationPock{
         let widthMove = e.x - efficacyInitPosition.x ;
         let heightMove = e.y - efficacyInitPosition.y;
 
-        let circleX = Math.sin(this.efficacyFrame.efficacyContainer.initRotation) * (this.efficacyFrame.efficacyFrameSize.width/2+15);
-        let circleY = Math.cos(this.efficacyFrame.efficacyContainer.initRotation) * (this.efficacyFrame.efficacyFrameSize.height/2+15);
+        console.log("initRotation: ", this.efficacyFrame.efficacyContainer.initRotation);
+
+        console.log(this.efficacyFrame.efficacyFrameSize.width);
+
+        let circleX = Math.sin(this.efficacyFrame.efficacyContainer.initRotation) * (this.efficacyFrame.efficacyFrameSize.width/2);
+        let circleY = Math.cos(this.efficacyFrame.efficacyContainer.initRotation) * (this.efficacyFrame.efficacyFrameSize.height/2);
 
         if(circleX+widthMove>0){
-            return Math.PI/2-Math.atan((circleY-heightMove)/(circleX+widthMove));
+            return Math.PI/2 - Math.atan((circleY-heightMove)/(circleX+widthMove));
         }else if(circleX+widthMove<0){
-            return Math.PI*3/2-Math.atan((circleY-heightMove)/(circleX+widthMove));
+            return Math.PI*3/2 - Math.atan((circleY-heightMove)/(circleX+widthMove));
+        }else{
+            return 0;
         }
     }
+    //旋转移动响应事件
     rotationMove(e, efficacyInitPosition){
         let moveRotation = this.moveRotation(e, efficacyInitPosition);
+        console.log("moveRotation: ", moveRotation);
         this.efficacyFrame.efficacyContainer.rotation = moveRotation;
 
         this.efficacyFrame.bunnySelect.forEach(bunny =>{
-
             bunny.rotation = moveRotation;
         })
     }
