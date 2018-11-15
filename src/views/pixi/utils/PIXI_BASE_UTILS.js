@@ -15,38 +15,32 @@ export default {
         }
         let abLength = Math.sqrt(Math.pow(efficacyAnchorPosition.x - x, 2) + Math.pow(efficacyAnchorPosition.y - y, 2));
         let angle;
-        console.log("efficacyAnchorPosition: ", efficacyAnchorPosition);
 
         if(efficacyAnchorPosition.x - x === 0){
             angle = rotation - Math.PI/2;
         }else{
-            console.log("+++: ", efficacyAnchorPosition.x, x, efficacyAnchorPosition.y, y);
+            console.log("+++: ", efficacyAnchorPosition.x, efficacyAnchorPosition.y, x, y);
             console.log("---: ", Math.atan((efficacyAnchorPosition.y - y)/(efficacyAnchorPosition.x - x)), rotation, Math.PI/2);
-            if(efficacyAnchorPosition.x > x && efficacyAnchorPosition.y < y){
-                console.log("进入A------><");
-                angle = -Math.atan((efficacyAnchorPosition.y - y)/(efficacyAnchorPosition.x - x)) - (Math.PI/2 - rotation);
-            }else if(efficacyAnchorPosition.x < x && efficacyAnchorPosition.y > y){
-                console.log("进入B------><");
-                angle = -Math.atan((efficacyAnchorPosition.y - y)/(efficacyAnchorPosition.x - x)) - (Math.PI/2 - rotation);
-            }else{
-                console.log("ffffff---")
-            }
-
-            // angle = Math.atan((y - efficacyAnchorPosition.y)/(efficacyAnchorPosition.x - x)) + rotation - Math.PI/2;
+            angle = -Math.atan((efficacyAnchorPosition.y - y)/(efficacyAnchorPosition.x - x)) - (Math.PI/2 - rotation);
         }
 
-        console.log("angle: ", angle, "abLength: ", abLength);
+        let moveWidth = abLength * Math.sin(angle);
+        let moveHeight = abLength * Math.cos(angle);
 
-        let moveWidth = abLength * Math.cos(angle);
-        let moveHeight = abLength * Math.sin(angle);
+        let res = {x: 0.5, y: 0.5}
+        if(efficacyAnchorPosition.x > x){
+            res.x = (width/2 - moveWidth) / width;
+        }else if(efficacyAnchorPosition.x < x){
+            res.x = (width/2 + moveWidth) / width;
+        }
 
-        console.log({moveWidth, moveHeight});
-
-        return {
-            x: moveWidth/width,
-            y: moveHeight/height
-        };
-
+        if(efficacyAnchorPosition.y > y){
+            res.y = (height/2 + moveHeight) / height;
+        }else if(efficacyAnchorPosition.y < y){
+            res.y = (height/2 - moveHeight) / height;
+        }
+        console.log("res: ", res);
+        return res;
     },
 
     /**
