@@ -479,27 +479,27 @@ export default class EfficacyFrame{
         }
         let result = this.distributeDirection(points, rotation);
 
-        let g1 = this.createTestSquare(result.left.x, result.left.y, "left");
-        let g2 = this.createTestSquare(result.right.x, result.right.y, "right");
-        let g3 = this.createTestSquare(result.top.x, result.top.y, "top");
-        let g4 = this.createTestSquare(result.bottom.x, result.bottom.y, "bottom");
-        this.testContainer.addChild(g1);
-        this.testContainer.addChild(g2);
-        this.testContainer.addChild(g3);
-        this.testContainer.addChild(g4);
+        // let g1 = this.createTestSquare(result.left.x, result.left.y, "left");
+        // let g2 = this.createTestSquare(result.right.x, result.right.y, "right");
+        // let g3 = this.createTestSquare(result.top.x, result.top.y, "top");
+        // let g4 = this.createTestSquare(result.bottom.x, result.bottom.y, "bottom");
+        // this.testContainer.addChild(g1);
+        // this.testContainer.addChild(g2);
+        // this.testContainer.addChild(g3);
+        // this.testContainer.addChild(g4);
 
         let {leftTop, rightTop, rightBottom, leftBottom} = this.rectanglePoint(result, rotation);
 
         // let {leftTop, rightTop, rightBottom, leftBottom} = this.rectanglePoint(result, ro);
-        let gg1 = this.createTestSquare(leftTop.x, leftTop.y, "leftTop");
-        let gg2 = this.createTestSquare(rightTop.x, rightTop.y, "rightTop");
-        let gg3 = this.createTestSquare(rightBottom.x, rightBottom.y, "rightBottom");
-        let gg4 = this.createTestSquare(leftBottom.x, leftBottom.y, "leftBottom");
-
-        this.testContainer.addChild(gg1);
-        this.testContainer.addChild(gg2);
-        this.testContainer.addChild(gg3);
-        this.testContainer.addChild(gg4);
+        // let gg1 = this.createTestSquare(leftTop.x, leftTop.y, "leftTop");
+        // let gg2 = this.createTestSquare(rightTop.x, rightTop.y, "rightTop");
+        // let gg3 = this.createTestSquare(rightBottom.x, rightBottom.y, "rightBottom");
+        // let gg4 = this.createTestSquare(leftBottom.x, leftBottom.y, "leftBottom");
+        //
+        // this.testContainer.addChild(gg1);
+        // this.testContainer.addChild(gg2);
+        // this.testContainer.addChild(gg3);
+        // this.testContainer.addChild(gg4);
 
         // console.log({leftTop, rightTop, rightBottom, leftBottom});
 

@@ -65,7 +65,6 @@ export default class RotationPock{
     rotationMove(e, efficacyInitPosition){
         let moveRotation = this.moveRotation(e, efficacyInitPosition, this.efficacyFrame.efficacyContainer.initRotation);
         this.efficacyFrame.efficacyContainer.rotation = moveRotation;
-
         this.efficacyFrame.bunnySelect.forEach(bunny =>{
             bunny.rotation = this.moveRotation(e, efficacyInitPosition, bunny.initRotation);
         })
