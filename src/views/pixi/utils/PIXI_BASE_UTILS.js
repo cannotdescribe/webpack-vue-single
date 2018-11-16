@@ -19,26 +19,57 @@ export default {
         if(efficacyAnchorPosition.x - x === 0){
             angle = rotation - Math.PI/2;
         }else{
-            console.log("+++: ", efficacyAnchorPosition.x, efficacyAnchorPosition.y, x, y);
-            console.log("---: ", Math.atan((efficacyAnchorPosition.y - y)/(efficacyAnchorPosition.x - x)), rotation, Math.PI/2);
-            angle = -Math.atan((efficacyAnchorPosition.y - y)/(efficacyAnchorPosition.x - x)) - (Math.PI/2 - rotation);
+            // console.log("+++: ", efficacyAnchorPosition.x, efficacyAnchorPosition.y, x, y);
+            // console.log("---: ", Math.atan((efficacyAnchorPosition.x - x)/(efficacyAnchorPosition.y - y)), rotation, Math.PI/2);
+            // console.log("##宽度和高##: ", (efficacyAnchorPosition.x - x), (efficacyAnchorPosition.y - y));
+            // console.log("position: ", {x, y});
+            angle = Math.atan((efficacyAnchorPosition.x - x)/(efficacyAnchorPosition.y - y)) - (Math.PI/2 - rotation);
         }
+        // console.log("width: ", Math.cos(angle)+"*"+abLength, "height: ", Math.sin(angle)+"*"+abLength, "angle: ", angle);
 
-        let moveWidth = abLength * Math.sin(angle);
-        let moveHeight = abLength * Math.cos(angle);
+        let moveWidth = abLength * Math.cos(angle);
+        let moveHeight = abLength * Math.sin(angle);
+
+        // console.log("moveWidth: ",moveWidth, "moveHeight: ", moveHeight);
 
         let res = {x: 0.5, y: 0.5}
-        if(efficacyAnchorPosition.x > x){
+        if(efficacyAnchorPosition.x > x && efficacyAnchorPosition.y < y){
+            console.log("-----------A----------");
             res.x = (width/2 - moveWidth) / width;
-        }else if(efficacyAnchorPosition.x < x){
+            res.y = (height/2 + moveHeight) / height;
+        }else if(efficacyAnchorPosition.x > x && efficacyAnchorPosition.y > y){
+            console.log("-----------B----------");
             res.x = (width/2 + moveWidth) / width;
+            res.y = (height/2 - moveHeight) / height;
+        }else if(efficacyAnchorPosition.x < x && efficacyAnchorPosition.y < y){
+            console.log("-----------C----------");
+            res.x = (width/2 - moveWidth) / width;
+            res.y = (height/2 + moveHeight) / height;
+        }else if(efficacyAnchorPosition.x < x && efficacyAnchorPosition.y > y){
+            console.log("-----------D----------");
+            res.x = (width/2 + moveWidth) / width;
+            res.y = (height/2 - moveHeight) / height;
+        }else if(efficacyAnchorPosition.x > x && efficacyAnchorPosition.y === y){
+            console.log("-----------e----------");
+            // res.x = (width/2 - moveWidth) / width;
+            res.y = (height/2 - moveHeight) / height;
+        }else if(efficacyAnchorPosition.x > x && efficacyAnchorPosition.y === y){
+            console.log("-----------f----------");
+            // res.x = (width/2 + moveWidth) / width;
+            res.y = (height/2 + moveHeight) / height;
+        }else if(efficacyAnchorPosition.x === x && efficacyAnchorPosition.y < y){
+            console.log("-----------g----------");
+            res.x = (width/2 + moveWidth) / width;
+            // res.y = (height/2 + moveHeight) / height;
+        }else if(efficacyAnchorPosition.x === x && efficacyAnchorPosition.y > y){
+            console.log("-----------h----------");
+            res.x = (width/2 - moveWidth) / width;
+            // res.y = (height/2 - moveHeight) / height;
+        }else{
+            console.log("fffffffffffffffffffff");
+            console.log(efficacyAnchorPosition.x , x ,efficacyAnchorPosition.y , y);
         }
 
-        if(efficacyAnchorPosition.y > y){
-            res.y = (height/2 + moveHeight) / height;
-        }else if(efficacyAnchorPosition.y < y){
-            res.y = (height/2 - moveHeight) / height;
-        }
         console.log("res: ", res);
         return res;
     },
@@ -76,7 +107,7 @@ export default {
             bunny.position.y = bunny.position.y + bunny.width * Math.sin(bunny.rotation) + bunny.height * Math.cos(bunny.rotation);
         */
         let oldAnchor ={x: bunny.anchor.x, y: bunny.anchor.y};
-        console.log("newAnchor: ",  newAnchor);
+        // console.log("newAnchor: ",  newAnchor);
         bunny.anchor.set(newAnchor.x, newAnchor.y);
         bunny.position.x = bunny.position.x + (newAnchor.x - oldAnchor.x) * bunny.width * Math.cos(bunny.rotation) - (newAnchor.y - oldAnchor.y) * bunny.height * Math.sin(bunny.rotation);
         bunny.position.y = bunny.position.y + (newAnchor.x - oldAnchor.x) * bunny.width * Math.sin(bunny.rotation) + (newAnchor.y - oldAnchor.y) * bunny.height * Math.cos(bunny.rotation);
