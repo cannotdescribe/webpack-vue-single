@@ -12,8 +12,6 @@ import login from "@/views/login/index.vue"
 import monitor from "@/views/monitor/Monitor.vue"
 import deploy from "@/views/deploy/Deploy.vue"
 
-import history from "@/views/history/History.vue"
-
 const _import = require('./_import_' + process.env.NODE_ENV)
 
 
@@ -39,49 +37,49 @@ export default new Router({
 })
 
 export const asyncRouterMap = [
-    {
-        path: '/monitor',
-        component: Layout,
-        redirect: '/monitor/index',
-        meta: {
-            title: "监控"
-        },
-        childType: "none",
-        children:[
-            {
-                path: "",
-                component: _import("monitor/Monitor"),
-                hidden: true,
-                children:[{
-                    path: "center",
-                    component: _import("monitor/childrenPage/center"),
-                    hidden: true
-                },{
-                    path: "station",
-                    component: _import("monitor/childrenPage/station"),
-                    hidden: true
-                },{
-                    path: "room",
-                    component: _import("monitor/childrenPage/room"),
-                    hidden: true
-                },{
-                    path: "device",
-                    component: _import("monitor/childrenPage/device"),
-                    hidden: true
-                },{
-                    path: "code",
-                    component: _import("monitor/childrenPage/code"),
-                    hidden: true
-                }]
-            }
-        ]
-    },
+    // {
+    //     path: '/monitor',
+    //     component: Layout,
+    //     redirect: '/monitor/index',
+    //     meta: {
+    //         title: "监控"
+    //     },
+    //     childType: "none",
+    //     children:[
+    //         {
+    //             path: "",
+    //             component: _import("monitor/Monitor"),
+    //             hidden: true,
+    //             children:[{
+    //                 path: "center",
+    //                 component: _import("monitor/childrenPage/center"),
+    //                 hidden: true
+    //             },{
+    //                 path: "station",
+    //                 component: _import("monitor/childrenPage/station"),
+    //                 hidden: true
+    //             },{
+    //                 path: "room",
+    //                 component: _import("monitor/childrenPage/room"),
+    //                 hidden: true
+    //             },{
+    //                 path: "device",
+    //                 component: _import("monitor/childrenPage/device"),
+    //                 hidden: true
+    //             },{
+    //                 path: "code",
+    //                 component: _import("monitor/childrenPage/code"),
+    //                 hidden: true
+    //             }]
+    //         }
+    //     ]
+    // },
     {
         path: '/example',
         component: Layout,
         redirect: '/example/demo01',
         meta: {
-            title: "监控"
+            title: "测试"
         },
         childType: "none",
         children:[{
@@ -192,51 +190,6 @@ export const asyncRouterMap = [
         ]
     },
 
-    {
-        path: '/history',
-        component: Layout,
-        redirect: '/history/alarmHistory',
-        childType: "none",
-        meta: {
-            title: "历史"
-        },
-        children: [
-            {
-                path: "alarmHistory",
-                component: history,
-                meta: {
-                    title: "告警历史"
-                },
-                redirect: '/history/alarmHistory/index',
-                children:[
-                    {
-                        path: "index",
-                        component: _import("history/alarmHistory/alarmHistory"),
-                        meta: {
-                            title: "告警历史查询"
-                        }
-                    }
-                ]
-            },
-            {
-                path: "historyData",
-                component: history,
-                meta: {
-                    title: "历史数据"
-                },
-                redirect: '/history/historyData/index',
-                children:[
-                    {
-                        path: "index",
-                        component: _import("history/historyData/historyData"),
-                        meta: {
-                            title: "历史数据查询"
-                        }
-                    }
-                ]
-            }
-        ]
-    },
 
     {
       path: '/pixi',
@@ -265,6 +218,42 @@ export const asyncRouterMap = [
           // ]
         },
       ]
+    },
+
+    {
+        path: '/three',
+        component: Layout,
+        redirect: '/three/base',
+        childType: "none",
+        meta: {
+            title: "threejs"
+        },
+        children: [
+            {
+                path: "base",
+                component: _import("three/index"),
+                meta: {
+                    title: "基础"
+                },
+                redirect: '/three/base/start',
+                children:[
+                    {
+                        path: "start",
+                        component: _import("three/base/start"),
+                        meta: {
+                            title: "start"
+                        }
+                    },
+                    {
+                        path: "way",
+                        component: _import("three/base/way"),
+                        meta: {
+                            title: "go a way"
+                        }
+                    }
+                ]
+            }
+        ]
     },
     // {
     //     path: '/example',
