@@ -34,10 +34,11 @@ export default class BodyContainer{
                 bunny.initSizeAndPosition = {};
                 bunny.initSizeAndPosition.width = bunny.width;
                 bunny.initSizeAndPosition.height = bunny.height;
-                // bunny.rotation = 0;
+                bunny.rotation = 0;
+                bunny.initRotation = 0;
                 //     bunny.rotation = Math.PI;
-                bunny.rotation = Math.PI/3;
-                bunny.initRotation = Math.PI/3;
+                // bunny.rotation = Math.PI/3;
+                // bunny.initRotation = Math.PI/3;
 
                 this.imgSrcReference = null;
             }
@@ -127,6 +128,8 @@ export default class BodyContainer{
         bunny.y = y;
 
         function onDragStart(event) {
+            console.log("initRotation: ", bunny.initRotation);
+
             _this.mouseEvent.initX = event.data.originalEvent.screenX;
             _this.mouseEvent.initY = event.data.originalEvent.screenY;
 

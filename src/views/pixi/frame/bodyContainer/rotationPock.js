@@ -61,12 +61,31 @@ export default class RotationPock{
             return 0;
         }
     }
+
+    bunnyMoveRotation(e, efficacyInitPosition, initRotation){
+        let widthMove = e.x - efficacyInitPosition.x ;
+        let heightMove = e.y - efficacyInitPosition.y;
+
+        let circleX = Math.sin(initRotation) * (this.efficacyFrame.efficacyFrameSize.width/2);
+        let circleY = Math.cos(initRotation) * (this.efficacyFrame.efficacyFrameSize.height/2);
+        if(initRotation !== 0){
+            console.log(efficacyInitPosition);
+            console.log({widthMove, heightMove, circleX, circleY});
+        }
+
+        if(circleX+widthMove>0){
+            return Math.PI/2 - Math.atan((circleY-heightMove)/(circleX+widthMove));
+        }else if(circleX+widthMove<0){
+            return Math.PI*3/2 - Math.atan((circleY-heightMove)/(circleX+widthMove));
+        }else{
+            return 0;
+        }
+    }
     //旋转移动响应事件
     rotationMove(e, efficacyInitPosition){
-        let moveRotation = this.moveRotation(e, efficacyInitPosition, this.efficacyFrame.efficacyContainer.initRotation);
-        this.efficacyFrame.efficacyContainer.rotation = moveRotation;
+        this.efficacyFrame.efficacyContainer.rotation = this.moveRotation(e, efficacyInitPosition, this.efficacyFrame.efficacyContainer.initRotation);
         this.efficacyFrame.bunnySelect.forEach(bunny =>{
-            bunny.rotation = this.moveRotation(e, efficacyInitPosition, bunny.initRotation);
+            bunny.rotation = this.bunnyMoveRotation(e, efficacyInitPosition, bunny.initRotation);
         })
     }
 }
