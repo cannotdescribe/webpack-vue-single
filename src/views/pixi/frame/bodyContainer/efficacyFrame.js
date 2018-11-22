@@ -1,16 +1,17 @@
 import * as PIXI from 'pixi.js'
 import PIXI_BASE_UTILS from "../../utils/PIXI_BASE_UTILS.js"
-import RotationPock from "./rotationPock.js"
+import BunnyRotationPock from "./bunnyRotationPock.js"
+import BunnyResizeHandler from "./bunnyResizeHandler.js"
 
 export default class EfficacyFrame{
-    constructor(app, plane, bunnyContainer, bunnySelect){
+    constructor(app, plane, bunnyContainer, bunnySelectStore){
         this.app = app;
         //底
         this.plane = plane;
         //bunny的Container
         this.bunnyContainer = bunnyContainer;
         //选择中的bunny
-        this.bunnySelect = bunnySelect;
+        this.bunnySelectStore = bunnySelectStore;
         //efficacyFrame 的边框的Container
         this.efficacyContainer = {};
         //efficacyFrame 的边框组件
@@ -34,9 +35,13 @@ export default class EfficacyFrame{
             rotation: false,
             remove: false
         };
-        this.rotationPock = new RotationPock(this);
-        //efficacyFrame 单个点变换是所需要的参照坐标
+
+        //efficacyFrame 单个点变换是所需要的参照坐标, 相对窗口而言
         this.efficacyInitPosition = {
+            x:0, y:0
+        };
+        //efficacyFrame 单个点变换是所需要的参照坐标, 相对画布而言
+        this.efficacyCanvasInitPosition = {
             x:0, y:0
         };
         //efficacyFrameSize efficacyFrame 真实大小
@@ -48,6 +53,9 @@ export default class EfficacyFrame{
         this.efficacyFrameInitSize = {
             width:0, height:0
         };
+
+        this.bunnyRotationPock = new BunnyRotationPock(this);
+        this.bunnyResizeHandler = new BunnyResizeHandler(this);
 
         this.efficacyMouseUp = ()=>{
             //bunny变化完成，将所有bunny的anchor恢复回原状
@@ -67,7 +75,7 @@ export default class EfficacyFrame{
 
             this.efficacyContainer.initRotation = this.efficacyContainer.rotation;
 
-            this.bunnySelect.forEach(bunny =>{
+            this.bunnySelectStore.forEach(bunny =>{
                 PIXI_BASE_UTILS.bunnySetNewAnchor(bunny, {x: 0.5, y: 0.5})
 
                 bunny.initSizeAndPosition.width = bunny.width;
@@ -89,7 +97,7 @@ export default class EfficacyFrame{
             this.btnState.rotation = false;
             this.btnState.remove = false;
 
-            // this.bunnySelect.forEach(bunny =>{
+            // this.bunnySelectStore.forEach(bunny =>{
             //     console.log(bunny.position.x, bunny.position.y);
             // });
             // this.efficacyFrameSize.width
@@ -105,7 +113,7 @@ export default class EfficacyFrame{
             //
             // console.log("efficacyContainer:  ", this.efficacyContainer.position.x, this.efficacyContainer.position.y);
             this.compose();
-
+            this.initEfficacyContainerPosition();
             // console.log(this.efficacyContainer.width, this.efficacyContainer.height, this.efficacyContainer.position.x, this.efficacyContainer.position.y);
 
         };
@@ -114,164 +122,20 @@ export default class EfficacyFrame{
          * @param e
          */
         this.efficacyMouseMove = e=>{
-            if(this.btnState.leftTop){
-                let widthMove = e.x - this.efficacyInitPosition.x;
-                let heightMove = e.y - this.efficacyInitPosition.y;
 
-                this.bunnySelect.forEach(bunny => {
-                    bunny.width = bunny.initSizeAndPosition.width/this.efficacyFrameSize.width* -widthMove + bunny.initSizeAndPosition.width;
-                    bunny.height = bunny.initSizeAndPosition.height/this.efficacyFrameSize.height* -heightMove + bunny.initSizeAndPosition.height;
-                });
-
-                this.squaresEfficacy[0].position.x = this.squaresEfficacy[0].initPosition.x + widthMove;
-                this.squaresEfficacy[0].position.y = this.squaresEfficacy[0].initPosition.y + heightMove;
-                this.squaresEfficacy[1].position.x = this.squaresEfficacy[1].initPosition.x + widthMove/2;
-                this.squaresEfficacy[1].position.y = this.squaresEfficacy[1].initPosition.y + heightMove;
-                this.squaresEfficacy[2].position.y = this.squaresEfficacy[2].initPosition.y + heightMove;
-                this.squaresEfficacy[3].position.y = this.squaresEfficacy[3].initPosition.y + heightMove/2;
-                this.squaresEfficacy[5].position.x = this.squaresEfficacy[5].initPosition.x + widthMove/2;
-                this.squaresEfficacy[6].position.x = this.squaresEfficacy[6].initPosition.x + widthMove;
-                this.squaresEfficacy[7].position.x = this.squaresEfficacy[7].initPosition.x + widthMove;
-                this.squaresEfficacy[7].position.y = this.squaresEfficacy[7].initPosition.y + heightMove/2;
-
-                this.squaresEfficacy[8].position.x = this.squaresEfficacy[8].initPosition.x + widthMove/2;
-                this.squaresEfficacy[8].position.y = this.squaresEfficacy[8].initPosition.y + heightMove;
-                this.squaresEfficacy[9].position.x = this.squaresEfficacy[9].initPosition.x + widthMove;
-                this.squaresEfficacy[9].position.y = this.squaresEfficacy[9].initPosition.y + heightMove;
-                this.squaresEfficacy[10].position.y = this.squaresEfficacy[10].initPosition.y + heightMove;
-                this.squaresEfficacy[12].position.x = this.squaresEfficacy[12].initPosition.x + widthMove;
-
-            }else if(this.btnState.centerTop){
-                let heightMove = e.y - this.efficacyInitPosition.y;
-                this.bunnySelect.forEach(bunny => {
-                    bunny.height = bunny.initSizeAndPosition.height/this.efficacyFrameSize.height * -heightMove + bunny.initSizeAndPosition.height;
-                });
-                this.squaresEfficacy[0].position.y = this.squaresEfficacy[0].initPosition.y + heightMove;
-                this.squaresEfficacy[1].position.y = this.squaresEfficacy[1].initPosition.y + heightMove;
-                this.squaresEfficacy[2].position.y = this.squaresEfficacy[2].initPosition.y + heightMove;
-                this.squaresEfficacy[3].position.y = this.squaresEfficacy[3].initPosition.y + heightMove/2;
-                this.squaresEfficacy[7].position.y = this.squaresEfficacy[7].initPosition.y + heightMove/2;
-
-                this.squaresEfficacy[8].position.y = this.squaresEfficacy[8].initPosition.y + heightMove;
-                this.squaresEfficacy[9].position.y = this.squaresEfficacy[9].initPosition.y + heightMove;
-                this.squaresEfficacy[10].position.y = this.squaresEfficacy[10].initPosition.y + heightMove;
-
-            }else if(this.btnState.rightTop){
-                let widthMove = e.x - this.efficacyInitPosition.x ;
-                let heightMove = e.y - this.efficacyInitPosition.y;
-                this.bunnySelect.forEach(bunny => {
-                    bunny.width = bunny.initSizeAndPosition.width/this.efficacyFrameSize.width * widthMove + bunny.initSizeAndPosition.width;
-                    bunny.height = bunny.initSizeAndPosition.height/this.efficacyFrameSize.height * -heightMove + bunny.initSizeAndPosition.height;
-                });
-                this.squaresEfficacy[0].position.y = this.squaresEfficacy[0].initPosition.y + heightMove;
-                this.squaresEfficacy[1].position.x = this.squaresEfficacy[1].initPosition.x + widthMove/2;
-                this.squaresEfficacy[1].position.y = this.squaresEfficacy[1].initPosition.y + heightMove;
-                this.squaresEfficacy[2].position.x = this.squaresEfficacy[2].initPosition.x + widthMove;
-                this.squaresEfficacy[2].position.y = this.squaresEfficacy[2].initPosition.y + heightMove;
-                this.squaresEfficacy[3].position.x = this.squaresEfficacy[3].initPosition.x + widthMove;
-                this.squaresEfficacy[3].position.y = this.squaresEfficacy[3].initPosition.y + heightMove/2;
-                this.squaresEfficacy[4].position.x = this.squaresEfficacy[4].initPosition.x + widthMove;
-                this.squaresEfficacy[5].position.x = this.squaresEfficacy[5].initPosition.x + widthMove/2;
-                this.squaresEfficacy[7].position.y = this.squaresEfficacy[7].initPosition.y + heightMove/2;
-
-                this.squaresEfficacy[8].position.x = this.squaresEfficacy[8].initPosition.x + widthMove/2;
-                this.squaresEfficacy[8].position.y = this.squaresEfficacy[8].initPosition.y + heightMove;
-                this.squaresEfficacy[9].position.y = this.squaresEfficacy[9].initPosition.y + heightMove;
-                this.squaresEfficacy[10].position.x = this.squaresEfficacy[10].initPosition.x + widthMove;
-                this.squaresEfficacy[10].position.y = this.squaresEfficacy[10].initPosition.y + heightMove;
-                this.squaresEfficacy[11].position.x = this.squaresEfficacy[11].initPosition.x + widthMove;
-            }else if(this.btnState.rightCenter){
-                let widthMove = e.x - this.efficacyInitPosition.x ;
-                this.bunnySelect.forEach(bunny => {
-                    bunny.width = bunny.initSizeAndPosition.width/this.efficacyFrameSize.width * widthMove + bunny.initSizeAndPosition.width;
-                });
-
-                this.squaresEfficacy[1].position.x = this.squaresEfficacy[1].initPosition.x + widthMove/2;
-                this.squaresEfficacy[2].position.x = this.squaresEfficacy[2].initPosition.x + widthMove;
-                this.squaresEfficacy[3].position.x = this.squaresEfficacy[3].initPosition.x + widthMove;
-                this.squaresEfficacy[4].position.x = this.squaresEfficacy[4].initPosition.x + widthMove;
-                this.squaresEfficacy[5].position.x = this.squaresEfficacy[5].initPosition.x + widthMove/2;
-
-                this.squaresEfficacy[8].position.x = this.squaresEfficacy[8].initPosition.x + widthMove/2;
-                this.squaresEfficacy[10].position.x = this.squaresEfficacy[10].initPosition.x + widthMove;
-                this.squaresEfficacy[11].position.x = this.squaresEfficacy[11].initPosition.x + widthMove;
-            }else if(this.btnState.rightBottom){
-                let widthMove = e.x - this.efficacyInitPosition.x ;
-                let heightMove = e.y - this.efficacyInitPosition.y;
-                this.bunnySelect.forEach(bunny => {
-                    bunny.width = bunny.initSizeAndPosition.width/this.efficacyFrameSize.width * widthMove + bunny.initSizeAndPosition.width;
-                    bunny.height = bunny.initSizeAndPosition.height/this.efficacyFrameSize.height * heightMove + bunny.initSizeAndPosition.height;
-                });
-
-                this.squaresEfficacy[1].position.x = this.squaresEfficacy[1].initPosition.x + widthMove/2;
-                this.squaresEfficacy[2].position.x = this.squaresEfficacy[2].initPosition.x + widthMove;
-                this.squaresEfficacy[3].position.x = this.squaresEfficacy[3].initPosition.x + widthMove;
-                this.squaresEfficacy[3].position.y = this.squaresEfficacy[3].initPosition.y + heightMove/2;
-                this.squaresEfficacy[4].position.x = this.squaresEfficacy[4].initPosition.x + widthMove;
-                this.squaresEfficacy[4].position.y = this.squaresEfficacy[4].initPosition.y + heightMove;
-                this.squaresEfficacy[5].position.x = this.squaresEfficacy[5].initPosition.x + widthMove/2;
-                this.squaresEfficacy[5].position.y = this.squaresEfficacy[5].initPosition.y + heightMove;
-                this.squaresEfficacy[6].position.y = this.squaresEfficacy[6].initPosition.y + heightMove;
-                this.squaresEfficacy[7].position.y = this.squaresEfficacy[7].initPosition.y + heightMove/2;
-
-                this.squaresEfficacy[8].position.x = this.squaresEfficacy[8].initPosition.x + widthMove/2;
-                this.squaresEfficacy[10].position.x = this.squaresEfficacy[10].initPosition.x + widthMove;
-                this.squaresEfficacy[11].position.x = this.squaresEfficacy[11].initPosition.x + widthMove;
-                this.squaresEfficacy[11].position.y = this.squaresEfficacy[11].initPosition.y + heightMove;
-                this.squaresEfficacy[12].position.y = this.squaresEfficacy[12].initPosition.y + heightMove;
-            }else if(this.btnState.centerBottom){
-                let heightMove = e.y - this.efficacyInitPosition.y;
-                this.bunnySelect.forEach(bunny => {
-                    bunny.height = bunny.initSizeAndPosition.height/this.efficacyFrameSize.height * heightMove + bunny.initSizeAndPosition.height;
-                });
-                this.squaresEfficacy[3].position.y = this.squaresEfficacy[3].initPosition.y + heightMove/2;
-                this.squaresEfficacy[4].position.y = this.squaresEfficacy[4].initPosition.y + heightMove;
-                this.squaresEfficacy[5].position.y = this.squaresEfficacy[5].initPosition.y + heightMove;
-                this.squaresEfficacy[6].position.y = this.squaresEfficacy[6].initPosition.y + heightMove;
-                this.squaresEfficacy[7].position.y = this.squaresEfficacy[7].initPosition.y + heightMove/2;
-
-                this.squaresEfficacy[11].position.y = this.squaresEfficacy[11].initPosition.y + heightMove;
-                this.squaresEfficacy[12].position.y = this.squaresEfficacy[12].initPosition.y + heightMove;
-            }else if(this.btnState.leftBottom){
-                let widthMove = e.x - this.efficacyInitPosition.x ;
-                let heightMove = e.y - this.efficacyInitPosition.y;
-                this.bunnySelect.forEach(bunny => {
-                    bunny.width = bunny.initSizeAndPosition.width/this.efficacyFrameSize.width * -widthMove + bunny.initSizeAndPosition.width;
-                    bunny.height = bunny.initSizeAndPosition.height/this.efficacyFrameSize.height * heightMove + bunny.initSizeAndPosition.height;
-                });
-                this.squaresEfficacy[0].position.x = this.squaresEfficacy[0].initPosition.x + widthMove;
-                this.squaresEfficacy[1].position.x = this.squaresEfficacy[1].initPosition.x + widthMove/2;
-                this.squaresEfficacy[3].position.y = this.squaresEfficacy[3].initPosition.y + heightMove/2;
-                this.squaresEfficacy[4].position.y = this.squaresEfficacy[4].initPosition.y + heightMove;
-                this.squaresEfficacy[5].position.x = this.squaresEfficacy[5].initPosition.x + widthMove/2;
-                this.squaresEfficacy[5].position.y = this.squaresEfficacy[5].initPosition.y + heightMove;
-                this.squaresEfficacy[6].position.y = this.squaresEfficacy[6].initPosition.y + heightMove;
-                this.squaresEfficacy[6].position.x = this.squaresEfficacy[6].initPosition.x + widthMove;
-                this.squaresEfficacy[7].position.x = this.squaresEfficacy[7].initPosition.x + widthMove;
-                this.squaresEfficacy[7].position.y = this.squaresEfficacy[7].initPosition.y + heightMove/2;
-
-                this.squaresEfficacy[8].position.x = this.squaresEfficacy[8].initPosition.x + widthMove/2;
-                this.squaresEfficacy[9].position.x = this.squaresEfficacy[9].initPosition.x + widthMove;
-                this.squaresEfficacy[11].position.y = this.squaresEfficacy[11].initPosition.y + heightMove;
-                this.squaresEfficacy[12].position.y = this.squaresEfficacy[12].initPosition.y + heightMove;
-                this.squaresEfficacy[12].position.x = this.squaresEfficacy[12].initPosition.x + widthMove;
-            }else if(this.btnState.leftCenter){
-                let widthMove = e.x - this.efficacyInitPosition.x ;
-                this.bunnySelect.forEach(bunny => {
-                    bunny.width = bunny.initSizeAndPosition.width/this.efficacyFrameSize.width * -widthMove + bunny.initSizeAndPosition.width;
-                });
-
-                this.squaresEfficacy[0].position.x = this.squaresEfficacy[0].initPosition.x + widthMove;
-                this.squaresEfficacy[1].position.x = this.squaresEfficacy[1].initPosition.x + widthMove/2;
-                this.squaresEfficacy[5].position.x = this.squaresEfficacy[5].initPosition.x + widthMove/2;
-                this.squaresEfficacy[6].position.x = this.squaresEfficacy[6].initPosition.x + widthMove;
-                this.squaresEfficacy[7].position.x = this.squaresEfficacy[7].initPosition.x + widthMove;
-
-                this.squaresEfficacy[8].position.x = this.squaresEfficacy[8].initPosition.x + widthMove/2;
-                this.squaresEfficacy[9].position.x = this.squaresEfficacy[9].initPosition.x + widthMove;
-                this.squaresEfficacy[12].position.x = this.squaresEfficacy[12].initPosition.x + widthMove;
-            }else if(this.btnState.rotation){
-                this.rotationPock.rotationMove(e, this.efficacyInitPosition);
+            if(this.btnState.rotation){
+                this.bunnyRotationPock.rotationMove(e, this.efficacyCanvasInitPosition);
+            }else if(
+                this.btnState.leftTop ||
+                this.btnState.centerTop ||
+                this.btnState.rightTop ||
+                this.btnState.rightCenter ||
+                this.btnState.rightBottom ||
+                this.btnState.centerBottom ||
+                this.btnState.leftBottom ||
+                this.btnState.leftCenter
+            ){
+                this.bunnyResizeHandler.moveHandler(e);
             }
 
         };
@@ -281,9 +145,10 @@ export default class EfficacyFrame{
     }
 
     destroy(){
-        window.document.addEventListener("mouseup", this.efficacyMouseUp);
-        window.document.addEventListener("mousemove", this.efficacyMouseMove);
-        this.rotationPock.destroy();
+        window.document.removeEventListener("mouseup", this.efficacyMouseUp);
+        window.document.removeEventListener("mousemove", this.efficacyMouseMove);
+        this.bunnyRotationPock.destroy();
+        this.bunnyResizeHandler.destroy();
     }
 
     _initEfficacy(){
@@ -313,23 +178,6 @@ export default class EfficacyFrame{
     }
     clearEfficacy(){
         this.efficacyContainer.removeChildren(0, this.efficacyContainer.children.length);
-    }
-
-    /**
-     * x0= (x - rx0)*cos(a) - (y - ry0)*sin(a) + rx0 ;
-     * y0= (x - rx0)*sin(a) + (y - ry0)*cos(a) + ry0 ;
-     * 参考: https://jingyan.baidu.com/article/2c8c281dfbf3dd0009252a7b.html
-     *
-     * @param position {{x: *, y:*}} 点的初始位置
-     * @param origin {{x: *, y:*}} 点的旋转中心
-     * @param rotation int rad 点的旋转角度
-     * @returns {{x: *, y: *}} 结果
-     */
-    rotationPoint(position, origin, rotation){
-        return {
-            x: (position.x - origin.x) * Math.cos(rotation) - (position.y - origin.y) * Math.sin(rotation) + origin.x,
-            y: (position.x - origin.x) * Math.sin(rotation) + (position.y - origin.y) * Math.cos(rotation) + origin.y
-        }
     }
 
     /**
@@ -383,34 +231,6 @@ export default class EfficacyFrame{
         }else{
             od = Math.atan((b.y - a.y) / (b.x - a.x));
         }
-/*
-        if(a.x < b.x && a.y < b.y){
-            result = {
-                x: (b.x - (Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2)) * Math.cos(od - rotation) * Math.cos(rotation))),
-                y: (b.y - (Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2)) * Math.cos(od - rotation) * Math.sin(rotation)))
-            };
-        }else if(a.x > b.x && a.y > b.y){
-            result = {
-                x: (b.x + (Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2)) * Math.cos(od - rotation) * Math.cos(rotation))),
-                y: (b.y + (Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2)) * Math.cos(od - rotation) * Math.sin(rotation)))
-            };
-        }else if(a.x < b.x && a.y > b.y){
-            result = {
-                x: (b.x - (Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2)) * Math.cos(od - rotation) * Math.cos(rotation))),
-                y: (b.y - (Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2)) * Math.cos(od - rotation) * Math.sin(rotation)))
-            };
-        }else if(a.x > b.x && a.y < b.y){
-            result = {
-                x: (b.x + (Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2)) * Math.cos(od - rotation) * Math.cos(rotation))),
-                y: (b.y + (Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2)) * Math.cos(od - rotation) * Math.sin(rotation)))
-            };
-        }else{
-            result = {
-                x: b.x,
-                y: b.y
-            };
-        }
-*/
 
         if(a.x < b.x ){
             result = {
@@ -460,7 +280,7 @@ export default class EfficacyFrame{
      * @returns {{top: *, right: *, bottom: *, left: *}}
      */
     efficacyMaxSize(bunnies, rotation){
-        if(rotation === undefined){
+        if(!rotation){
             rotation = 0;
         }
         let points = [];
@@ -471,41 +291,19 @@ export default class EfficacyFrame{
             bunny.rb = {x: bunny.position.x + bunny.width/2, y: bunny.position.y + bunny.height/2};
 
             let bunnyRotation = bunny.rotation===undefined ?0:bunny.rotation;
-            let lt = this.rotationPoint(bunny.lt, bunny.position, bunnyRotation);
-            let rt = this.rotationPoint(bunny.rt, bunny.position, bunnyRotation);
-            let rb = this.rotationPoint(bunny.rb, bunny.position, bunnyRotation);
-            let lb = this.rotationPoint(bunny.lb, bunny.position, bunnyRotation);
+            let lt = PIXI_BASE_UTILS.rotationPoint(bunny.lt, bunny.position, bunnyRotation);
+            let rt = PIXI_BASE_UTILS.rotationPoint(bunny.rt, bunny.position, bunnyRotation);
+            let rb = PIXI_BASE_UTILS.rotationPoint(bunny.rb, bunny.position, bunnyRotation);
+            let lb = PIXI_BASE_UTILS.rotationPoint(bunny.lb, bunny.position, bunnyRotation);
             points.push(lt, rt, rb, lb);
         }
         let result = this.distributeDirection(points, rotation);
 
-        // let g1 = this.createTestSquare(result.left.x, result.left.y, "left");
-        // let g2 = this.createTestSquare(result.right.x, result.right.y, "right");
-        // let g3 = this.createTestSquare(result.top.x, result.top.y, "top");
-        // let g4 = this.createTestSquare(result.bottom.x, result.bottom.y, "bottom");
-        // this.testContainer.addChild(g1);
-        // this.testContainer.addChild(g2);
-        // this.testContainer.addChild(g3);
-        // this.testContainer.addChild(g4);
-
         let {leftTop, rightTop, rightBottom, leftBottom} = this.rectanglePoint(result, rotation);
 
-        // let {leftTop, rightTop, rightBottom, leftBottom} = this.rectanglePoint(result, ro);
-        // let gg1 = this.createTestSquare(leftTop.x, leftTop.y, "leftTop");
-        // let gg2 = this.createTestSquare(rightTop.x, rightTop.y, "rightTop");
-        // let gg3 = this.createTestSquare(rightBottom.x, rightBottom.y, "rightBottom");
-        // let gg4 = this.createTestSquare(leftBottom.x, leftBottom.y, "leftBottom");
-        //
-        // this.testContainer.addChild(gg1);
-        // this.testContainer.addChild(gg2);
-        // this.testContainer.addChild(gg3);
-        // this.testContainer.addChild(gg4);
-
-        // console.log({leftTop, rightTop, rightBottom, leftBottom});
-
         let centerPoint = {x: (leftTop.x+rightBottom.x)/2, y: (leftTop.y+rightBottom.y)/2};
-        let leftTopRotated = this.rotationPoint(leftTop, centerPoint, -rotation);
-        let rightBottomRotated = this.rotationPoint(rightBottom, centerPoint, -rotation);
+        let leftTopRotated = PIXI_BASE_UTILS.rotationPoint(leftTop, centerPoint, -rotation);
+        let rightBottomRotated = PIXI_BASE_UTILS.rotationPoint(rightBottom, centerPoint, -rotation);
 
         return {
             top: leftTopRotated.y,
@@ -513,8 +311,6 @@ export default class EfficacyFrame{
             right: rightBottomRotated.x,
             bottom: rightBottomRotated.y
         }
-
-        // return {};
     }
     createTestSquare(x, y, text) {
         let t = new PIXI.Text(text,{fontFamily : 'Arial', fontSize: 24, fill : 0xff1010, align : 'center'});
@@ -546,8 +342,11 @@ export default class EfficacyFrame{
             _this.efficacyInitPosition.x = e.data.originalEvent.x;
             _this.efficacyInitPosition.y = e.data.originalEvent.y;
 
+            _this.efficacyCanvasInitPosition.x = e.data.global.x;
+            _this.efficacyCanvasInitPosition.y = e.data.global.y;
+
             //为了对bunny形态做出变化，需要设置新的anchor
-            _this.bunnySelect.forEach(bunny =>{
+            _this.bunnySelectStore.forEach(bunny =>{
                 bunny.initSizeAndPosition.width = bunny.width;
                 bunny.initSizeAndPosition.height = bunny.height;
                 bunny.initSizeAndPosition.x = bunny.position.x;
@@ -559,6 +358,7 @@ export default class EfficacyFrame{
                 _this.efficacyContainer.initSizeAndPosition.height = _this.efficacyContainer.height;
 
                 let efficacyAnchorPosition = {x: 0, y: 0};
+                let efficacyAnchor ;
                 if(_this.btnState.leftTop){
                     efficacyAnchorPosition.x = _this.efficacyContainer.position.x + _this.efficacyFrameInitSize.width/2;
                     efficacyAnchorPosition.y = _this.efficacyContainer.position.y + _this.efficacyFrameInitSize.height/2;
@@ -584,7 +384,11 @@ export default class EfficacyFrame{
                     efficacyAnchorPosition.x = _this.efficacyContainer.position.x + _this.efficacyFrameInitSize.width/2;
                     efficacyAnchorPosition.y = _this.efficacyContainer.position.y;
                 }
-                PIXI_BASE_UTILS.bunnySetNewAnchorPosition(bunny, efficacyAnchorPosition);
+                efficacyAnchor = PIXI_BASE_UTILS.rotationPoint(efficacyAnchorPosition, bunny.position, bunny.rotation);
+
+                console.log("efficacyAnchor: ", efficacyAnchor);
+
+                PIXI_BASE_UTILS.bunnySetNewAnchorPosition(bunny, efficacyAnchor);
             });
 
             _this.squaresEfficacy.forEach(square=>{
@@ -610,8 +414,8 @@ export default class EfficacyFrame{
         graphics.endFill();
         graphics.position.x = x;
         graphics.position.y = y;
-        graphics.on("pointerover", ()=>{_this.rotationPock.displayRotationPock()});
-        graphics.on("pointerout", ()=>{_this.rotationPock.hideRotationPock()});
+        graphics.on("pointerover", ()=>{_this.bunnyRotationPock.displayRotationPock()});
+        graphics.on("pointerout", ()=>{_this.bunnyRotationPock.hideRotationPock()});
         graphics.on("pointerdown", e=>{
 
             if(btnState) _this.btnState[btnState] = true;
@@ -620,12 +424,12 @@ export default class EfficacyFrame{
             _this.efficacyInitPosition.x = e.data.originalEvent.x;
             _this.efficacyInitPosition.y = e.data.originalEvent.y;
 
+            _this.efficacyCanvasInitPosition.x = e.data.global.x;
+            _this.efficacyCanvasInitPosition.y = e.data.global.y;
+
             let frameCenter = this.getFrameCenter();
 
-            this.bunnySelect.forEach(bunny =>{
-                // let anchor = this.efficacyGetAnchor(bunny, frameCenter);
-                // bunny.anchor.set(anchor.x, anchor.y);
-                // console.log("anchor: ", anchor);
+            this.bunnySelectStore.forEach(bunny =>{
                 PIXI_BASE_UTILS.bunnySetNewAnchorPosition(bunny, frameCenter)
             })
         });
@@ -664,11 +468,11 @@ export default class EfficacyFrame{
         removeContainer.pivot.y = removeContainer.height / 2;
 
         removeContainer.on("pointerdown", ()=>{
-            _this.bunnySelect.forEach(bunny =>{
+            _this.bunnySelectStore.forEach(bunny =>{
                 _this.bunnyContainer.removeChild(bunny);
                 bunny.destroy();
             });
-            _this.bunnySelect.splice(0, _this.bunnySelect.length);
+            _this.bunnySelectStore.splice(0, _this.bunnySelectStore.length);
             _this.clearEfficacy();
         });
         return removeContainer;
@@ -678,6 +482,13 @@ export default class EfficacyFrame{
             x: this.efficacyContainer.position.x,
             y: this.efficacyContainer.position.y
         };
+    }
+    initEfficacyContainerPosition(){
+        if(!this.efficacyContainer.initSizeAndPosition){
+            this.efficacyContainer.initSizeAndPosition = {};
+        }
+        this.efficacyContainer.initSizeAndPosition.x = this.efficacyContainer.position.x;
+        this.efficacyContainer.initSizeAndPosition.y = this.efficacyContainer.position.y;
     }
     /**
      * 入口:
@@ -698,16 +509,12 @@ export default class EfficacyFrame{
         if(selectBunny){
             lastBunny = selectBunny;
         }else{
-            if(this.bunnySelect.length > 0){
-                lastBunny = this.bunnySelect[this.bunnySelect.length-1];
+            if(this.bunnySelectStore.length > 0){
+                lastBunny = this.bunnySelectStore[this.bunnySelectStore.length-1];
             }
         }
 
-        let {top, right, bottom, left} = this.efficacyMaxSize(_this.bunnySelect, lastBunny.rotation);
-
-        // console.log(bottom, top, right,left, bottom-top, right-left);
-
-
+        let {top, right, bottom, left} = this.efficacyMaxSize(_this.bunnySelectStore, lastBunny.rotation);
 
         this.efficacyFrameSize.width = Math.abs(right - left);
         this.efficacyFrameSize.height = Math.abs(bottom - top);
@@ -715,52 +522,36 @@ export default class EfficacyFrame{
         this.efficacyContainer.pivot.x = this.efficacyFrameSize.width/2 +10;
         this.efficacyContainer.pivot.y = this.efficacyFrameSize.height/2 +10;
 
-        // console.log(this.efficacyFrameSize.width, this.efficacyFrameSize.height);
-
        //TODO
         /**
          * 这里的顺序不能乱来，通常情况下，我们是看下标的来判断是属于哪个按钮
          * @type {[null,null,null,null,null,null,null,null,null,null,null,null,null]}
          */
-        this.squaresEfficacy = [
-            this.createSquare(15, 15, "leftTop"),
-            this.createSquare(15+this.efficacyFrameSize.width/2, 15, "centerTop"),
-            this.createSquare(15+this.efficacyFrameSize.width, 15, "rightTop"),
-            this.createSquare(15+this.efficacyFrameSize.width, 15+this.efficacyFrameSize.height/2, "rightCenter"),
-            this.createSquare(15+this.efficacyFrameSize.width, 15+this.efficacyFrameSize.height, "rightBottom"),
-            this.createSquare(15+this.efficacyFrameSize.width/2, 15+this.efficacyFrameSize.height, "centerBottom"),
-            this.createSquare(15, 15+this.efficacyFrameSize.height, "leftBottom"),
-            this.createSquare(15, 15+this.efficacyFrameSize.height/2, "leftCenter"),
+        this.squaresEfficacy.splice(0, this.squaresEfficacy.length);
+        this.squaresEfficacy[0] = this.createSquare(15, 15, "leftTop");
+        this.squaresEfficacy[1] = this.createSquare(15+this.efficacyFrameSize.width/2, 15, "centerTop");
+        this.squaresEfficacy[2] = this.createSquare(15+this.efficacyFrameSize.width, 15, "rightTop");
+        this.squaresEfficacy[3] = this.createSquare(15+this.efficacyFrameSize.width, 15+this.efficacyFrameSize.height/2, "rightCenter");
+        this.squaresEfficacy[4] = this.createSquare(15+this.efficacyFrameSize.width, 15+this.efficacyFrameSize.height, "rightBottom");
+        this.squaresEfficacy[5] = this.createSquare(15+this.efficacyFrameSize.width/2, 15+this.efficacyFrameSize.height, "centerBottom");
+        this.squaresEfficacy[6] = this.createSquare(15, 15+this.efficacyFrameSize.height, "leftBottom");
+        this.squaresEfficacy[7] = this.createSquare(15, 15+this.efficacyFrameSize.height/2, "leftCenter");
 
-            this.createCircle(this.efficacyFrameSize.width/2+15, 0, "rotation"),
-            this.createSquare(0, 0),
-            this.createSquare(this.efficacyFrameSize.width+30, 0),
-            this.createRemove(this.efficacyFrameSize.width+30, this.efficacyFrameSize.height+30),
-            this.createSquare(0, this.efficacyFrameSize.height+30)
-        ];
-
-
+        this.squaresEfficacy[8] = this.createCircle(this.efficacyFrameSize.width/2+15, 0, "rotation");
+        this.squaresEfficacy[9] = this.createSquare(0, 0);
+        this.squaresEfficacy[10] = this.createSquare(this.efficacyFrameSize.width+30, 0);
+        this.squaresEfficacy[11] = this.createRemove(this.efficacyFrameSize.width+30, this.efficacyFrameSize.height+30);
+        this.squaresEfficacy[12] = this.createSquare(0, this.efficacyFrameSize.height+30);
 
         //为efficacyFrame形态变化做好数据初始化
-        // console.log("bunnySelect: ", this.bunnySelect);
         this.squaresEfficacy.forEach(s=>{this.efficacyContainer.addChild(s)});
-        // this.efficacyContainer.anchor.set(0.5);
-        // console.log("compose start:  ", this.efficacyContainer.position.x, this.efficacyContainer.position.y);
         this.efficacyContainer.position.x = (right+left)/2;
         this.efficacyContainer.position.y = (top+bottom)/2;
 
         this.efficacyContainer.rotation = lastBunny.rotation===undefined ?0:lastBunny.rotation;
 
-        // console.log(this.efficacyContainer.position);
-        // console.log("compose end:  ", this.efficacyContainer.position.x, this.efficacyContainer.position.y);
-
-
         this.efficacyFrameInitSize.width = this.efficacyFrameSize.width;
         this.efficacyFrameInitSize.height = this.efficacyFrameSize.height;
-        this.efficacyContainer.initSizeAndPosition = {};
-        this.efficacyContainer.initSizeAndPosition.x = this.efficacyContainer.position.x;
-        this.efficacyContainer.initSizeAndPosition.y = this.efficacyContainer.position.y;
 
     }
-
 }

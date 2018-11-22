@@ -2,6 +2,15 @@ import * as PIXI from 'pixi.js'
 
 import EfficacyFrame from "./efficacyFrame.js"
 
+/**
+ * pixi相关参考说明，
+ * 在PIXI中，因为他的大部分属性都采用 Object.defineProperty()————属性监听，采用mvvm模式。
+ * 如果直接console.log(对象),无法看清他真实属性，请将将输出内容写的详细，
+ * 比如说：console.log(e.data.global.x, e.data.global.y);
+ *
+ * 1. 在响应事件回调函数中, e.data.global.x, e.data.global.y 为鼠标相对canvas的位置
+ *
+ */
 export default class BodyContainer{
     constructor(imgSrc, el){
         this.$el = el;
@@ -11,8 +20,12 @@ export default class BodyContainer{
         this.bunnyContainer = {};
         this.plane = {};
         this.isCtrlDown = false;
-        this.bunnySelect = [];
+        this.bunnySelectStore = [];
         this.spriteDemo = {};
+        /**
+         * 鼠标点击bunny的初始化位置，参照点
+         * @type {{initX: number, initY: number}}
+         */
         this.mouseEvent = {
             initX: 0,
             initY: 0
@@ -62,7 +75,7 @@ export default class BodyContainer{
 
         this.bunnyContainer = new PIXI.Container();
 
-        this.efficacyFrame = new EfficacyFrame(this.app, this.plane, this.bunnyContainer, this.bunnySelect);
+        this.efficacyFrame = new EfficacyFrame(this.app, this.plane, this.bunnyContainer, this.bunnySelectStore);
 
         this.app.stage.addChild(this.bunnyContainer);
 
@@ -86,6 +99,12 @@ export default class BodyContainer{
         this.spriteDemo.anchor.set(0.5);
         this.app.stage.addChild(this.spriteDemo);
     }
+    clearBunnySelected(){
+        for(let key in this.bunnySelectStore){
+            this.bunnySelectStore[key].bunnySelected = false;
+        }
+        this.bunnySelectStore.splice(0, this.bunnySelectStore.length);
+    }
     //创建地板，主要是为了做背景事件用的
     createFloor(){
         let planeTexture = new PIXI.Texture(PIXI.Texture.EMPTY)
@@ -98,7 +117,7 @@ export default class BodyContainer{
         this.app.stage.addChild(plane);
 
         plane.on("pointerdown", e=>{
-            this.bunnySelect.splice(0, this.bunnySelect.length);
+           this.clearBunnySelected();
         });
 
         return plane;
@@ -128,12 +147,17 @@ export default class BodyContainer{
         bunny.y = y;
 
         function onDragStart(event) {
-            console.log("initRotation: ", bunny.initRotation);
 
             _this.mouseEvent.initX = event.data.originalEvent.screenX;
             _this.mouseEvent.initY = event.data.originalEvent.screenY;
 
+            /**
+             * 为 bunny 属性初始化位置
+             * @type {{}}
+             */
             this.mouseEvent = {};
+
+
             this.mouseEvent.positionInitX = this.position.x;
             this.mouseEvent.positionInitY = this.position.y;
 
@@ -141,32 +165,35 @@ export default class BodyContainer{
             this.alpha = 0.5;
             this.dragging = true;
 
-            let clickSelected = false;
-            for(let b of _this.bunnySelect){
-                if(b === this) {
-                    clickSelected = true ;
-                    break
-                }
-            }
-            if(!clickSelected){
+            //TODO
+            _this.efficacyFrame.startEfficacy(event.data.global.x, event.data.global.y);
+
+            if(!this.bunnySelected){
                 bunny.initSizeAndPosition.x = bunny.position.x;
                 bunny.initSizeAndPosition.y = bunny.position.y;
                 if(_this.isCtrlDown){
-                    _this.bunnySelect.push(bunny);
+                    _this.bunnySelectStore.push(bunny);
                 }else{
-                    _this.bunnySelect.splice(0, _this.bunnySelect.length);
-                    _this.bunnySelect.push(bunny);
+                    _this.clearBunnySelected();
+                    _this.bunnySelectStore.push(bunny);
                 }
+
+                _this.efficacyFrame.compose(bunny);
+
+                /**
+                 * 表示该bunny已经被选中了
+                 * @type {boolean}
+                 */
+                this.bunnySelected = true;
             }
-            _this.efficacyFrame.compose(bunny);
-            _this.efficacyFrame.startEfficacy(this.x, this.y);
+            _this.efficacyFrame.initEfficacyContainerPosition();
         }
 
         function onDragEnd() {
             this.alpha = 1;
             this.dragging = false;
             this.data = null;
-            for(let bunny of _this.bunnySelect){
+            for(let bunny of _this.bunnySelectStore){
                 bunny.initSizeAndPosition.x = bunny.position.x;
                 bunny.initSizeAndPosition.y = bunny.position.y;
             }
@@ -175,11 +202,11 @@ export default class BodyContainer{
 
         function onDragMove(event) {
             if (this.dragging) {
-                for(let bunny of _this.bunnySelect){
+                for(let bunny of _this.bunnySelectStore){
                     bunny.position.x = bunny.initSizeAndPosition.x + event.data.originalEvent.screenX - _this.mouseEvent.initX;
                     bunny.position.y = bunny.initSizeAndPosition.y + event.data.originalEvent.screenY - _this.mouseEvent.initY;
                 }
-                _this.efficacyFrame.moveEfficacy(this.x, this.y);
+                _this.efficacyFrame.moveEfficacy(event.data.global.x, event.data.global.y);
             }
         }
     }
