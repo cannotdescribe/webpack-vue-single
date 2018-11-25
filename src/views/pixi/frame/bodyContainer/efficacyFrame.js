@@ -345,7 +345,7 @@ export default class EfficacyFrame{
             _this.efficacyCanvasInitPosition.x = e.data.global.x;
             _this.efficacyCanvasInitPosition.y = e.data.global.y;
 
-            //为了对bunny形态做出变化，需要设置新的anchor
+            //为了对bunny大小做出变化，需要设置新的anchor
             _this.bunnySelectStore.forEach(bunny =>{
                 bunny.initSizeAndPosition.width = bunny.width;
                 bunny.initSizeAndPosition.height = bunny.height;
@@ -384,10 +384,7 @@ export default class EfficacyFrame{
                     efficacyAnchorPosition.x = _this.efficacyContainer.position.x + _this.efficacyFrameInitSize.width/2;
                     efficacyAnchorPosition.y = _this.efficacyContainer.position.y;
                 }
-                efficacyAnchor = PIXI_BASE_UTILS.rotationPoint(efficacyAnchorPosition, bunny.position, bunny.rotation);
-
-                console.log("efficacyAnchor: ", efficacyAnchor);
-
+                efficacyAnchor = PIXI_BASE_UTILS.rotationPoint(efficacyAnchorPosition, _this.efficacyContainer.position, _this.efficacyContainer.rotation);
                 PIXI_BASE_UTILS.bunnySetNewAnchorPosition(bunny, efficacyAnchor);
             });
 

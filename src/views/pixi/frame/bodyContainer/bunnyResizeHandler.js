@@ -49,6 +49,7 @@ export default class BunnyResizeHandler{
                 let {height} = PIXI_BASE_UTILS.getMove(bunny.rotation, verticalWidthMove, verticalHeightMove);
                 bunny.height = bunny.initSizeAndPosition.height / this.efficacyFrameSize.height * -height + bunny.initSizeAndPosition.height;
             });
+
             this.squaresEfficacy[0].position.y = this.squaresEfficacy[0].initPosition.y + heightMove;
             this.squaresEfficacy[1].position.y = this.squaresEfficacy[1].initPosition.y + heightMove;
             this.squaresEfficacy[2].position.y = this.squaresEfficacy[2].initPosition.y + heightMove;
