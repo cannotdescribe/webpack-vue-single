@@ -22,6 +22,49 @@ export default {
             height: -Math.sin(rotation)*widthMove + Math.cos(rotation)*heightMove
         };
     },
+
+    getBunnySize(efficacyRotation, bunnyRotation, widthMove, heightMove, state){
+        if(state === "c"){
+            widthMove = 0;
+        }else if(state === "r"){
+            heightMove = 0;
+        }
+        let rotation = bunnyRotation - efficacyRotation, result;
+        if(rotation === 0){
+            result = {
+                width: widthMove,
+                height: heightMove
+            }
+        }else{
+            let ro = (rotation%(2*Math.PI)<0)? (rotation%(2*Math.PI)+2*Math.PI) : (rotation%(2*Math.PI));
+
+            if(0 < Math.abs(ro) && Math.abs(ro) <= Math.PI/2){
+                rotation = rotation;
+            }else if(Math.PI/2 < Math.abs(ro) && Math.abs(ro) <= Math.PI){
+                rotation = -rotation;
+            }else if(Math.PI < Math.abs(ro) && Math.abs(ro) <= Math.PI*3/2){
+                rotation = -rotation;
+            }else if(Math.PI * 3/2 < Math.abs(ro) && Math.abs(ro) <= Math.PI*2){
+                rotation = rotation;
+            }
+
+            result = {
+                width: (Math.cos(rotation) * widthMove 
+                        + 
+                        Math.sin(rotation) * heightMove )
+                        ,
+                height: (-Math.sin(rotation) * widthMove 
+                        + 
+                        Math.cos(rotation) * heightMove ) 
+            }
+        }
+        if(bunnyRotation !==0){
+            console.log(
+                result
+            );
+        }
+        return result;
+    },
     /**
      * 计算新的anchor
      * @param width                  float                  bunny宽

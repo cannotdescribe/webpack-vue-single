@@ -93,7 +93,7 @@ export default class BodyContainer{
         this.imgSrc = imgSrc;
     }
     createDemo(){
-        this.spriteDemo = PIXI.Sprite.fromImage('http://127.0.0.1:8090/static/pixitest/yuan.png');
+        this.spriteDemo = PIXI.Sprite.fromImage('http://127.0.0.1:8180/static/pixitest/yuan.png');
         this.spriteDemo.position.x = 50;
         this.spriteDemo.position.y = 50;
         this.spriteDemo.anchor.set(0.5);

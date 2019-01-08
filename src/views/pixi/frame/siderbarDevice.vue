@@ -52,9 +52,9 @@
             },
             nodeList(){
                 let imgSrcs = [
-                    "http://127.0.0.1:8090/static/pixitest/bunny.png",
-                    "http://127.0.0.1:8090/static/pixitest/testImage.png",
-                    "http://127.0.0.1:8090/static/pixitest/dog.jpg"
+                    "http://127.0.0.1:8180/static/pixitest/bunny.png",
+                    "http://127.0.0.1:8180/static/pixitest/testImage.png",
+                    "http://127.0.0.1:8180/static/pixitest/dog.jpg"
                 ];
                 for(let imgSrc of imgSrcs){
                     this.node(imgSrc)

@@ -192,24 +192,22 @@ export default class EfficacyFrame{
      * @returns {{left: *, top: *, right: *, bottom: *}}
      */
     distributeDirection(points, rotation){
-        // console.log("rotation: ", rotation/Math.PI);
         let left={x:0, y:0}, top={x:0, y:0}, right={x:0, y:0}, bottom={x:0, y:0};
         let transverseReference = points.sort((a0, a1)=>{
-            return (a0.x - a0.y / Math.tan(Math.PI/2 + rotation)) > (a1.x - a1.y / Math.tan(Math.PI/2 + rotation));
+            if(rotation===0){
+                return a0.x - a1.x;
+            }else{
+                return (a0.x - a0.y / Math.tan(Math.PI/2 + rotation)) - (a1.x - a1.y / Math.tan(Math.PI/2 + rotation));
+            }
         });
-        // for(let tr of transverseReference){
-        //     console.log("tr: ", tr.x - tr.y / Math.tan(Math.PI/2 - rotation), tr.x);
-        // }
         left.x = transverseReference[0].x;
         left.y = transverseReference[0].y;
         right.x = transverseReference[points.length-1].x;
         right.y = transverseReference[points.length-1].y;
+
         let verticalReference = points.sort((a0, a1)=>{
-            return (a0.y - a0.x * Math.tan(rotation)) > (a1.y - a1.x * Math.tan(rotation));
+            return (a0.y - a0.x * Math.tan(rotation)) - (a1.y - a1.x * Math.tan(rotation));
         });
-        // for(let vr of verticalReference){
-        //     console.log("vr: ", vr.y - vr.x * Math.tan(rotation), vr.y);
-        // }
         top.x = verticalReference[0].x;
         top.y = verticalReference[0].y;
         bottom.x = verticalReference[points.length-1].x;
@@ -298,10 +296,12 @@ export default class EfficacyFrame{
             points.push(lt, rt, rb, lb);
         }
         let result = this.distributeDirection(points, rotation);
-
         let {leftTop, rightTop, rightBottom, leftBottom} = this.rectanglePoint(result, rotation);
 
+        console.log("----不需要看: ", {leftTop, rightTop, rightBottom, leftBottom});
+
         let centerPoint = {x: (leftTop.x+rightBottom.x)/2, y: (leftTop.y+rightBottom.y)/2};
+
         let leftTopRotated = PIXI_BASE_UTILS.rotationPoint(leftTop, centerPoint, -rotation);
         let rightBottomRotated = PIXI_BASE_UTILS.rotationPoint(rightBottom, centerPoint, -rotation);
 
@@ -324,11 +324,11 @@ export default class EfficacyFrame{
         let graphics = new PIXI.Graphics(), _this = this;
         graphics.beginFill(0xD9D9D9);
         graphics.lineStyle(1, 0x2C3E50, 1);
-        graphics.moveTo(-5, -5);
-        graphics.lineTo(-5, +5);
-        graphics.lineTo(+5, +5);
-        graphics.lineTo(+5, -5);
-        graphics.lineTo(-5, -5);
+        graphics.moveTo(-4, -4);
+        graphics.lineTo(-4, +4);
+        graphics.lineTo(+4, +4);
+        graphics.lineTo(+4, -4);
+        graphics.lineTo(-4, -4);
         graphics.endFill();
 
         graphics.pivot.x = graphics.width / 2;
@@ -524,21 +524,22 @@ export default class EfficacyFrame{
          * 这里的顺序不能乱来，通常情况下，我们是看下标的来判断是属于哪个按钮
          * @type {[null,null,null,null,null,null,null,null,null,null,null,null,null]}
          */
+        let forword = 7;
         this.squaresEfficacy.splice(0, this.squaresEfficacy.length);
-        this.squaresEfficacy[0] = this.createSquare(15, 15, "leftTop");
-        this.squaresEfficacy[1] = this.createSquare(15+this.efficacyFrameSize.width/2, 15, "centerTop");
-        this.squaresEfficacy[2] = this.createSquare(15+this.efficacyFrameSize.width, 15, "rightTop");
-        this.squaresEfficacy[3] = this.createSquare(15+this.efficacyFrameSize.width, 15+this.efficacyFrameSize.height/2, "rightCenter");
-        this.squaresEfficacy[4] = this.createSquare(15+this.efficacyFrameSize.width, 15+this.efficacyFrameSize.height, "rightBottom");
-        this.squaresEfficacy[5] = this.createSquare(15+this.efficacyFrameSize.width/2, 15+this.efficacyFrameSize.height, "centerBottom");
-        this.squaresEfficacy[6] = this.createSquare(15, 15+this.efficacyFrameSize.height, "leftBottom");
-        this.squaresEfficacy[7] = this.createSquare(15, 15+this.efficacyFrameSize.height/2, "leftCenter");
+        this.squaresEfficacy[0] = this.createSquare(15 - forword, 15 - forword, "leftTop");
+        this.squaresEfficacy[1] = this.createSquare(15+this.efficacyFrameSize.width/2, 15 -forword, "centerTop");
+        this.squaresEfficacy[2] = this.createSquare(15+this.efficacyFrameSize.width + forword, 15 - forword, "rightTop");
+        this.squaresEfficacy[3] = this.createSquare(15+this.efficacyFrameSize.width + forword, 15+this.efficacyFrameSize.height/2, "rightCenter");
+        this.squaresEfficacy[4] = this.createSquare(15+this.efficacyFrameSize.width + forword, 15+this.efficacyFrameSize.height + forword, "rightBottom");
+        this.squaresEfficacy[5] = this.createSquare(15+this.efficacyFrameSize.width/2, 15+this.efficacyFrameSize.height + forword, "centerBottom");
+        this.squaresEfficacy[6] = this.createSquare(15 - forword, 15+this.efficacyFrameSize.height + forword, "leftBottom");
+        this.squaresEfficacy[7] = this.createSquare(15 - forword, 15+this.efficacyFrameSize.height/2, "leftCenter");
 
-        this.squaresEfficacy[8] = this.createCircle(this.efficacyFrameSize.width/2+15, 0, "rotation");
-        this.squaresEfficacy[9] = this.createSquare(0, 0);
-        this.squaresEfficacy[10] = this.createSquare(this.efficacyFrameSize.width+30, 0);
-        this.squaresEfficacy[11] = this.createRemove(this.efficacyFrameSize.width+30, this.efficacyFrameSize.height+30);
-        this.squaresEfficacy[12] = this.createSquare(0, this.efficacyFrameSize.height+30);
+        this.squaresEfficacy[8] = this.createCircle(this.efficacyFrameSize.width/2+17, - forword, "rotation");
+        this.squaresEfficacy[9] = this.createSquare(- forword, - forword);
+        this.squaresEfficacy[10] = this.createSquare(this.efficacyFrameSize.width+30 + forword, - forword);
+        this.squaresEfficacy[11] = this.createRemove(this.efficacyFrameSize.width+30 + forword, this.efficacyFrameSize.height+30 + forword);
+        this.squaresEfficacy[12] = this.createSquare(- forword, this.efficacyFrameSize.height+30 + forword);
 
         //为efficacyFrame形态变化做好数据初始化
         this.squaresEfficacy.forEach(s=>{this.efficacyContainer.addChild(s)});

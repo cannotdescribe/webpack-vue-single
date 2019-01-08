@@ -19,9 +19,17 @@ export default class BunnyResizeHandler{
         let widthMove = efficacyMove.width;
         let heightMove = efficacyMove.height;
 
+        if(heightMove+64 > this.efficacyFrame.efficacyContainer.initSizeAndPosition.height){
+            heightMove =  this.efficacyFrame.efficacyContainer.initSizeAndPosition.height-64
+        }
+        if(widthMove+64 > this.efficacyFrame.efficacyContainer.initSizeAndPosition.width){
+            widthMove =  this.efficacyFrame.efficacyContainer.initSizeAndPosition.width-64
+        }
+
         if (this.btnState.leftTop) {
+            
             this.bunnySelectStore.forEach(bunny => {
-                let {width, height} = PIXI_BASE_UTILS.getMove(bunny.rotation, verticalWidthMove, verticalHeightMove);
+                let {width, height} = PIXI_BASE_UTILS.getBunnySize(this.efficacyFrame.efficacyContainer.rotation, bunny.rotation, widthMove, heightMove);
                 bunny.width = bunny.initSizeAndPosition.width / this.efficacyFrameSize.width * - width + bunny.initSizeAndPosition.width;
                 bunny.height = bunny.initSizeAndPosition.height / this.efficacyFrameSize.height * - height + bunny.initSizeAndPosition.height;
             });
@@ -46,7 +54,9 @@ export default class BunnyResizeHandler{
 
         } else if (this.btnState.centerTop) {
             this.bunnySelectStore.forEach(bunny => {
-                let {height} = PIXI_BASE_UTILS.getMove(bunny.rotation, verticalWidthMove, verticalHeightMove);
+                let {width, height} = PIXI_BASE_UTILS.getBunnySize(this.efficacyFrame.efficacyContainer.rotation, bunny.rotation, widthMove, heightMove, "c");
+                 //TODO
+                bunny.width = bunny.initSizeAndPosition.width / this.efficacyFrameSize.width * - width + bunny.initSizeAndPosition.width;
                 bunny.height = bunny.initSizeAndPosition.height / this.efficacyFrameSize.height * -height + bunny.initSizeAndPosition.height;
             });
 
@@ -62,7 +72,7 @@ export default class BunnyResizeHandler{
 
         } else if (this.btnState.rightTop) {
             this.bunnySelectStore.forEach(bunny => {
-                let {width, height} = PIXI_BASE_UTILS.getMove(bunny.rotation, verticalWidthMove, verticalHeightMove);
+                let {width, height} = PIXI_BASE_UTILS.getBunnySize(this.efficacyFrame.efficacyContainer.rotation, bunny.rotation, widthMove, heightMove);
                 bunny.width = bunny.initSizeAndPosition.width / this.efficacyFrameSize.width * width + bunny.initSizeAndPosition.width;
                 bunny.height = bunny.initSizeAndPosition.height / this.efficacyFrameSize.height * -height + bunny.initSizeAndPosition.height;
             });
@@ -85,8 +95,10 @@ export default class BunnyResizeHandler{
             this.squaresEfficacy[11].position.x = this.squaresEfficacy[11].initPosition.x + widthMove;
         } else if (this.btnState.rightCenter) {
             this.bunnySelectStore.forEach(bunny => {
-                let {width} = PIXI_BASE_UTILS.getMove(bunny.rotation, verticalWidthMove, verticalHeightMove);
+                let {width, height} = PIXI_BASE_UTILS.getBunnySize(this.efficacyFrame.efficacyContainer.rotation, bunny.rotation, widthMove, heightMove, "r");
                 bunny.width = bunny.initSizeAndPosition.width / this.efficacyFrameSize.width * width + bunny.initSizeAndPosition.width;
+                //TODO
+                bunny.height = bunny.initSizeAndPosition.height / this.efficacyFrameSize.height * -height + bunny.initSizeAndPosition.height;
             });
 
             this.squaresEfficacy[1].position.x = this.squaresEfficacy[1].initPosition.x + widthMove / 2;
@@ -100,7 +112,7 @@ export default class BunnyResizeHandler{
             this.squaresEfficacy[11].position.x = this.squaresEfficacy[11].initPosition.x + widthMove;
         } else if (this.btnState.rightBottom) {
             this.bunnySelectStore.forEach(bunny => {
-                let {width, height} = PIXI_BASE_UTILS.getMove(bunny.rotation, verticalWidthMove, verticalHeightMove);
+                let {width, height} = PIXI_BASE_UTILS.getBunnySize(this.efficacyFrame.efficacyContainer.rotation, bunny.rotation, widthMove, heightMove);
                 bunny.width = bunny.initSizeAndPosition.width / this.efficacyFrameSize.width * width + bunny.initSizeAndPosition.width;
                 bunny.height = bunny.initSizeAndPosition.height / this.efficacyFrameSize.height * height + bunny.initSizeAndPosition.height;
             });
@@ -123,7 +135,9 @@ export default class BunnyResizeHandler{
             this.squaresEfficacy[12].position.y = this.squaresEfficacy[12].initPosition.y + heightMove;
         } else if (this.btnState.centerBottom) {
             this.bunnySelectStore.forEach(bunny => {
-                let {height} = PIXI_BASE_UTILS.getMove(bunny.rotation, verticalWidthMove, verticalHeightMove);
+                let {width, height} = PIXI_BASE_UTILS.getBunnySize(this.efficacyFrame.efficacyContainer.rotation, bunny.rotation, widthMove, heightMove, "c");
+                //TODO
+                bunny.width = bunny.initSizeAndPosition.width / this.efficacyFrameSize.width * width + bunny.initSizeAndPosition.width;
                 bunny.height = bunny.initSizeAndPosition.height / this.efficacyFrameSize.height * height + bunny.initSizeAndPosition.height;
             });
             this.squaresEfficacy[3].position.y = this.squaresEfficacy[3].initPosition.y + heightMove / 2;
@@ -136,7 +150,7 @@ export default class BunnyResizeHandler{
             this.squaresEfficacy[12].position.y = this.squaresEfficacy[12].initPosition.y + heightMove;
         } else if (this.btnState.leftBottom) {
             this.bunnySelectStore.forEach(bunny => {
-                let {width, height} = PIXI_BASE_UTILS.getMove(bunny.rotation, verticalWidthMove, verticalHeightMove);
+                let {width, height} = PIXI_BASE_UTILS.getBunnySize(this.efficacyFrame.efficacyContainer.rotation, bunny.rotation, widthMove, heightMove);
                 bunny.width = bunny.initSizeAndPosition.width / this.efficacyFrameSize.width * -width + bunny.initSizeAndPosition.width;
                 bunny.height = bunny.initSizeAndPosition.height / this.efficacyFrameSize.height * height + bunny.initSizeAndPosition.height;
             });
@@ -158,8 +172,10 @@ export default class BunnyResizeHandler{
             this.squaresEfficacy[12].position.x = this.squaresEfficacy[12].initPosition.x + widthMove;
         } else if (this.btnState.leftCenter) {
             this.bunnySelectStore.forEach(bunny => {
-                let {width} = PIXI_BASE_UTILS.getMove(bunny.rotation, verticalWidthMove, verticalHeightMove);
+                let {width, height} = PIXI_BASE_UTILS.getBunnySize(this.efficacyFrame.efficacyContainer.rotation, bunny.rotation, widthMove, heightMove, "r");
                 bunny.width = bunny.initSizeAndPosition.width / this.efficacyFrameSize.width * -width + bunny.initSizeAndPosition.width;
+                //TODO
+                bunny.height = bunny.initSizeAndPosition.height / this.efficacyFrameSize.height * height + bunny.initSizeAndPosition.height;
             });
 
             this.squaresEfficacy[0].position.x = this.squaresEfficacy[0].initPosition.x + widthMove;
