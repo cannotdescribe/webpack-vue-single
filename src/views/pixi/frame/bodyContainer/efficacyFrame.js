@@ -4,7 +4,8 @@ import BunnyRotationPock from "./bunnyRotationPock.js"
 import BunnyResizeHandler from "./bunnyResizeHandler.js"
 
 export default class EfficacyFrame{
-    constructor(app, plane, bunnyContainer, bunnySelectStore){
+    constructor(bodyContainer, app, plane, bunnyContainer, bunnySelectStore){
+        this.bodyContainer = bodyContainer;
         this.app = app;
         //底
         this.plane = plane;
@@ -429,6 +430,8 @@ export default class EfficacyFrame{
             this.bunnySelectStore.forEach(bunny =>{
                 PIXI_BASE_UTILS.bunnySetNewAnchorPosition(bunny, frameCenter)
             })
+
+            _this.bodyContainer.executeHandler("bunnyRotate", _this.bunnySelectStore);
         });
         return graphics;
     }
@@ -470,6 +473,7 @@ export default class EfficacyFrame{
                 bunny.destroy();
             });
             _this.bunnySelectStore.splice(0, _this.bunnySelectStore.length);
+            _this.bodyContainer.executeHandler("bunnyRemove", _this.bunnySelectStore);
             _this.clearEfficacy();
         });
         return removeContainer;

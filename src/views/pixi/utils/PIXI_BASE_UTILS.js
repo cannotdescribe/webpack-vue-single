@@ -37,14 +37,33 @@ export default {
             }
         }else{
             let ro = (rotation%(2*Math.PI)<0)? (rotation%(2*Math.PI)+2*Math.PI) : (rotation%(2*Math.PI));
+            if(0 < ro && ro <= Math.PI/2){
+                if(0<ro && ro<= Math.PI/4){
+                    
+                }else{
 
-            if(0 < Math.abs(ro) && Math.abs(ro) <= Math.PI/2){
+                }
                 rotation = rotation;
-            }else if(Math.PI/2 < Math.abs(ro) && Math.abs(ro) <= Math.PI){
+            }else if(Math.PI/2 < ro && ro <= Math.PI){
+                if(Math.PI/2<ro && ro<= Math.PI*3/4){
+
+                }else{
+
+                }
                 rotation = -rotation;
-            }else if(Math.PI < Math.abs(ro) && Math.abs(ro) <= Math.PI*3/2){
+            }else if(Math.PI < ro && ro <= Math.PI*3/2){
+                if(Math.PI<ro && ro<= Math.PI*5/4){
+
+                }else{
+
+                }
                 rotation = -rotation;
-            }else if(Math.PI * 3/2 < Math.abs(ro) && Math.abs(ro) <= Math.PI*2){
+            }else if(Math.PI * 3/2 < ro && ro <= Math.PI*2){
+                if(Math.PI * 3/2 < ro && ro<= Math.PI*7/4){
+
+                }else{
+
+                }
                 rotation = rotation;
             }
 

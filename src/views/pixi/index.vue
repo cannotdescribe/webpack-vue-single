@@ -8,7 +8,7 @@
                 <siderbar-device :maskImg="maskImg" @pointerdown="pointerdownHandler" @pointerup="pointerupHandler" @pointermove="pointermoveHandler"></siderbar-device>
             </div>
             <div class="control-body">
-                <body-container :imgSrc="maskImg.imgSrc" ref="bodyContainerRef"></body-container>
+                <body-container  ref="bodyContainerRef" :imgSrc="maskImg.imgSrc"></body-container>
             </div>
             <div class="right-sidebar">
                 <el-input v-model="maskImg.rotation"></el-input>
@@ -54,6 +54,7 @@
             },
             pointerupHandler(){
                 this.mouseState.mouseLeftDown = false;
+                this.maskImg.imgSrc = null;
             },
             pointermoveHandler(e){
 

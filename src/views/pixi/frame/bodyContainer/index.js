@@ -3,6 +3,8 @@ import * as PIXI from 'pixi.js'
 import EfficacyFrame from "./efficacyFrame.js"
 
 /**
+ * 目前不集成ctrl功能，这个功能还未开发完成，下版本想办法修复
+ * 
  * pixi相关参考说明，
  * 在PIXI中，因为他的大部分属性都采用 Object.defineProperty()————属性监听，采用mvvm模式。
  * 如果直接console.log(对象),无法看清他真实属性，请将将输出内容写的详细，
@@ -12,16 +14,27 @@ import EfficacyFrame from "./efficacyFrame.js"
  *
  */
 export default class BodyContainer{
-    constructor(imgSrc, el){
+    constructor(el, options){
         this.$el = el;
         this.app = {};
         this.groups =[];
-        this.imgSrcReference = null;
+        this.options = options;
         this.bunnyContainer = {};
         this.plane = {};
         this.isCtrlDown = false;
         this.bunnySelectStore = [];
         this.spriteDemo = {};
+        this.eventHandler = {
+            mouseover: [],
+            mouseup: [],
+
+            bunnyMoveEnd: [],
+            bunnyMove: [],
+            bunnyRotate: [],
+            bunnyRemove: []
+        }
+
+        this.__planeTexture;
         /**
          * 鼠标点击bunny的初始化位置，参照点
          * @type {{initX: number, initY: number}}
@@ -30,31 +43,17 @@ export default class BodyContainer{
             initX: 0,
             initY: 0
         };
-        this.imgSrc = imgSrc;
+        // this.imgSrc = imgSrc;
         let _this = this;
 
         this.app = new PIXI.Application({width: this.$el.offsetWidth, height: this.$el.offsetHeight, transparent: true});
         this.$el.appendChild(this.app.view);
 
-        this.mouseover = ()=>{
-            this.imgSrcReference = this.imgSrc;
+        this.mouseover = e =>{
+            this.executeHandler("mouseover", e)
         }
-        this.mouseup = e=>{
-            if(this.imgSrcReference){
-                let bunny = this.nodeSpriteChange({imgSrc: this.imgSrcReference, x:e.offsetX, y:e.offsetY});
-                this.bunnyContainer.addChild(bunny);
-
-                bunny.initSizeAndPosition = {};
-                bunny.initSizeAndPosition.width = bunny.width;
-                bunny.initSizeAndPosition.height = bunny.height;
-                bunny.rotation = 0;
-                bunny.initRotation = 0;
-                //     bunny.rotation = Math.PI;
-                // bunny.rotation = Math.PI/3;
-                // bunny.initRotation = Math.PI/3;
-
-                this.imgSrcReference = null;
-            }
+        this.mouseup = e =>{
+            this.executeHandler("mouseup", e)
         }
         this.app.view.addEventListener("mouseover", this.mouseover);
         this.app.view.addEventListener("mouseup", this.mouseup);
@@ -75,30 +74,40 @@ export default class BodyContainer{
 
         this.bunnyContainer = new PIXI.Container();
 
-        this.efficacyFrame = new EfficacyFrame(this.app, this.plane, this.bunnyContainer, this.bunnySelectStore);
+        this.efficacyFrame = new EfficacyFrame(this, this.app, this.plane, this.bunnyContainer, this.bunnySelectStore);
 
         this.app.stage.addChild(this.bunnyContainer);
 
         this.efficacyFrame._initEfficacy();
 
-        this.createDemo();
     }
+    executeHandler(eventName, ...args){
+        for(let mouseoverHandler of this.eventHandler[eventName]){
+            mouseoverHandler.apply(this, args)
+        }
+    }
+    on(eventName, eventHandler){
+        this.eventHandler[eventName].push(eventHandler);
+    }
+    setBackground(background){
+        this.__planeTexture.baseTexture = PIXI.BaseTexture.fromImage(background);
+    }
+    appendChild(imageUrl, options){
+        let bunny = this.nodeSpriteChange({imgSrc: imageUrl, x:options.x, y:options.y});
+        this.bunnyContainer.addChild(bunny);
 
+        bunny.initSizeAndPosition = {};
+        bunny.initSizeAndPosition.width = bunny.width;
+        bunny.initSizeAndPosition.height = bunny.height;
+        bunny.rotation = 0;
+        bunny.initRotation = 0;
+    }
     destroy(){
         this.app.view.removeEventListener("mouseover", this.mouseover);
         this.app.view.removeEventListener("mouseup", this.mouseup);
         this.efficacyFrame.destroy();
     }
-    setImgSrc(imgSrc){
-        this.imgSrc = imgSrc;
-    }
-    createDemo(){
-        this.spriteDemo = PIXI.Sprite.fromImage('http://127.0.0.1:8180/static/pixitest/yuan.png');
-        this.spriteDemo.position.x = 50;
-        this.spriteDemo.position.y = 50;
-        this.spriteDemo.anchor.set(0.5);
-        this.app.stage.addChild(this.spriteDemo);
-    }
+    
     clearBunnySelected(){
         for(let key in this.bunnySelectStore){
             this.bunnySelectStore[key].bunnySelected = false;
@@ -107,9 +116,10 @@ export default class BodyContainer{
     }
     //创建地板，主要是为了做背景事件用的
     createFloor(){
-        let planeTexture = new PIXI.Texture(PIXI.Texture.EMPTY)
+        // let planeTexture = new PIXI.Texture(PIXI.Texture.EMPTY)
+        this.__planeTexture = PIXI.Texture.fromImage(this.options.background);
         let plane = new PIXI.extras.TilingSprite(
-            planeTexture,
+            this.__planeTexture,
             this.app.screen.width,
             this.app.screen.height
         );
@@ -198,6 +208,8 @@ export default class BodyContainer{
                 bunny.initSizeAndPosition.y = bunny.position.y;
             }
             _this.efficacyFrame.endEfficacy(this.x, this.y);
+            
+            _this.executeHandler("bunnyMoveEnd", _this.bunnySelectStore)
         }
 
         function onDragMove(event) {
@@ -207,6 +219,8 @@ export default class BodyContainer{
                     bunny.position.y = bunny.initSizeAndPosition.y + event.data.originalEvent.screenY - _this.mouseEvent.initY;
                 }
                 _this.efficacyFrame.moveEfficacy(event.data.global.x, event.data.global.y);
+
+                this.executeHandler("bunnyMove", _this.bunnySelectStore)
             }
         }
     }
