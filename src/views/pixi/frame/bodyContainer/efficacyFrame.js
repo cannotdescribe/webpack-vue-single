@@ -359,7 +359,7 @@ export default class EfficacyFrame{
                 _this.efficacyContainer.initSizeAndPosition.height = _this.efficacyContainer.height;
 
                 let efficacyAnchorPosition = {x: 0, y: 0};
-                let efficacyAnchor ;
+                let efficacyAnchor;
                 if(_this.btnState.leftTop){
                     efficacyAnchorPosition.x = _this.efficacyContainer.position.x + _this.efficacyFrameInitSize.width/2;
                     efficacyAnchorPosition.y = _this.efficacyContainer.position.y + _this.efficacyFrameInitSize.height/2;

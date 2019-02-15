@@ -29,7 +29,7 @@ export default {
         }else if(state === "r"){
             heightMove = 0;
         }
-        let rotation = bunnyRotation - efficacyRotation, result;
+        let rotation = bunnyRotation - efficacyRotation, result = {};
         if(rotation === 0){
             result = {
                 width: widthMove,
@@ -37,45 +37,57 @@ export default {
             }
         }else{
             let ro = (rotation%(2*Math.PI)<0)? (rotation%(2*Math.PI)+2*Math.PI) : (rotation%(2*Math.PI));
-            if(0 < ro && ro <= Math.PI/2){
-                if(0<ro && ro<= Math.PI/4){
-                    
-                }else{
+            console.log("ro: ", ro, ro > Math.PI*7/4 || ro <= Math.PI/4);
+            if(ro > Math.PI*7/4 || ro <= Math.PI/4){
+                result.height = (-Math.sin(rotation) * widthMove + Math.cos(rotation) * heightMove);
+                result.width = widthMove;
+            }else if(ro > Math.PI/4 && ro <= Math.PI*3/4){
 
-                }
-                rotation = rotation;
-            }else if(Math.PI/2 < ro && ro <= Math.PI){
-                if(Math.PI/2<ro && ro<= Math.PI*3/4){
+            }else if(ro > Math.PI*3/4 && ro <= Math.PI*5/4){
 
-                }else{
+            }else if(ro > Math.PI*5/4 && ro <= Math.PI*7/4){
 
-                }
-                rotation = -rotation;
-            }else if(Math.PI < ro && ro <= Math.PI*3/2){
-                if(Math.PI<ro && ro<= Math.PI*5/4){
-
-                }else{
-
-                }
-                rotation = -rotation;
-            }else if(Math.PI * 3/2 < ro && ro <= Math.PI*2){
-                if(Math.PI * 3/2 < ro && ro<= Math.PI*7/4){
-
-                }else{
-
-                }
-                rotation = rotation;
             }
 
-            result = {
-                width: (Math.cos(rotation) * widthMove 
-                        + 
-                        Math.sin(rotation) * heightMove )
-                        ,
-                height: (-Math.sin(rotation) * widthMove 
-                        + 
-                        Math.cos(rotation) * heightMove ) 
-            }
+            // if(0 < ro && ro <= Math.PI/2){
+            //     if(0<ro && ro<= Math.PI/4){
+            //         console.log("0 ~ PI/4");
+            //     }else{
+            //         console.log("PI/4 ~ PI/2");
+            //     }
+            //     rotation = rotation;
+            // }else if(Math.PI/2 < ro && ro <= Math.PI){
+            //     if(Math.PI/2<ro && ro<= Math.PI*3/4){
+            //         console.log("PI/2 ~ 3*PI/4");
+            //     }else{
+            //         console.log("3*PI/4 ~ PI");
+            //     }
+            //     rotation = -rotation;
+            // }else if(Math.PI < ro && ro <= Math.PI*3/2){
+            //     if(Math.PI<ro && ro<= Math.PI*5/4){
+            //         console.log("PI ~ 5*PI/4");
+            //     }else{
+            //         console.log("5*PI/4 ~ 3*PI/2");
+            //     }
+            //     rotation = -rotation;
+            // }else if(Math.PI * 3/2 < ro && ro <= Math.PI*2){
+            //     if(Math.PI * 3/2 < ro && ro<= Math.PI*7/4){
+            //         console.log("3*PI/2 ~ 7*PI/4");
+            //     }else{
+            //         console.log("7*PI/4 ~ 2*PI");
+            //     }
+            //     rotation = rotation;
+            // }
+
+            // result = {
+            //     width: (Math.cos(rotation) * widthMove 
+            //             + 
+            //             Math.sin(rotation) * heightMove )
+            //             ,
+            //     height: (-Math.sin(rotation) * widthMove 
+            //             + 
+            //             Math.cos(rotation) * heightMove ) 
+            // }
         }
         if(bunnyRotation !==0){
             console.log(

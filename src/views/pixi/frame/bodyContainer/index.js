@@ -1,6 +1,7 @@
 import * as PIXI from 'pixi.js'
 
 import EfficacyFrame from "./efficacyFrame.js"
+import PIXI_BASE_UTILS from "../../utils/PIXI_BASE_UTILS.js"
 
 /**
  * 目前不集成ctrl功能，这个功能还未开发完成，下版本想办法修复
@@ -35,6 +36,13 @@ export default class BodyContainer{
         }
 
         this.__planeTexture;
+        this.__backgroundClick={
+            flag : false,
+            initX: 0,
+            initY: 0,
+            containerInitX: 0,
+            containerInitY: 0
+        }
         /**
          * 鼠标点击bunny的初始化位置，参照点
          * @type {{initX: number, initY: number}}
@@ -50,11 +58,26 @@ export default class BodyContainer{
         this.$el.appendChild(this.app.view);
 
         this.mouseover = e =>{
-            this.executeHandler("mouseover", e)
+            this.executeHandler("mouseover", e);
         }
         this.mouseup = e =>{
-            this.executeHandler("mouseup", e)
+            this.executeHandler("mouseup", e);
         }
+        this.backgroundMouseMove = e=>{
+            if(this.__backgroundClick.flag){
+                let verticalWidthMove = e.x - this.__backgroundClick.initX;
+                let verticalHeightMove = e.y - this.__backgroundClick.initY;
+                let efficacyMove = PIXI_BASE_UTILS.getMove(0, verticalWidthMove, verticalHeightMove);
+                this.app.stage.x = this.__backgroundClick.containerInitX + efficacyMove.width;
+                this.app.stage.y = this.__backgroundClick.containerInitY + efficacyMove.height;
+            }
+        }
+        this.backgroundMouseUp = e=>{
+            this.__backgroundClick.flag = false;
+        }
+        window.document.addEventListener("mousemove", this.backgroundMouseMove);
+        window.document.addEventListener("mouseup", this.backgroundMouseUp);
+
         this.app.view.addEventListener("mouseover", this.mouseover);
         this.app.view.addEventListener("mouseup", this.mouseup);
 
@@ -105,6 +128,10 @@ export default class BodyContainer{
     destroy(){
         this.app.view.removeEventListener("mouseover", this.mouseover);
         this.app.view.removeEventListener("mouseup", this.mouseup);
+
+        document.removeEventListener("mousemove", this.backgroundMouseMove);
+        document.removeEventListener("mouseup", this.backgroundMouseUp);
+
         this.efficacyFrame.destroy();
     }
     
@@ -126,10 +153,21 @@ export default class BodyContainer{
         plane.interactive = true;
         this.app.stage.addChild(plane);
 
+        // 
         plane.on("pointerdown", e=>{
            this.clearBunnySelected();
-        });
+           this.__backgroundClick.flag = true;
 
+           this.__backgroundClick.initX = e.data.originalEvent.x;
+           this.__backgroundClick.initY = e.data.originalEvent.y;
+
+           this.__backgroundClick.containerInitX = this.app.stage.x;
+           this.__backgroundClick.containerInitY = this.app.stage.y;
+        });
+        
+        // plane.on("pointerdown", e=>{
+        //     this.clearBunnySelected();
+        // });
         return plane;
     }
     nodeSpriteChange(node){
@@ -220,7 +258,7 @@ export default class BodyContainer{
                 }
                 _this.efficacyFrame.moveEfficacy(event.data.global.x, event.data.global.y);
 
-                this.executeHandler("bunnyMove", _this.bunnySelectStore)
+                _this.executeHandler("bunnyMove", _this.bunnySelectStore)
             }
         }
     }

@@ -18,7 +18,7 @@ export default class BunnyResizeHandler{
         let efficacyMove = PIXI_BASE_UTILS.getMove(this.efficacyFrame.efficacyContainer.rotation, verticalWidthMove, verticalHeightMove);
         let widthMove = efficacyMove.width;
         let heightMove = efficacyMove.height;
-
+        console.log("move handler!");
         if(heightMove+64 > this.efficacyFrame.efficacyContainer.initSizeAndPosition.height){
             heightMove =  this.efficacyFrame.efficacyContainer.initSizeAndPosition.height-64
         }
