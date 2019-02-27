@@ -19,18 +19,19 @@
         },
         mounted(){
             this.bodyContainer = new BodyContainer(this.$el, {
-                background: "/static/pixi/background.jpg"
+                background: "/static/pixi/background.jpg",
+                transform: false
             });
 
-            window.setTimeout(()=>{
-                this.bodyContainer.setBackground("/static/pixi/background2.jpg");
-            }, 1000);
+            // window.setTimeout(()=>{
+            //     this.bodyContainer.setBackground("/static/pixi/background2.jpg");
+            // }, 1000);
 
             this.bodyContainer.on("mouseover", e=>{
             });
             this.bodyContainer.on("mouseup", e=>{
                 if(this.imgSrc){
-                    this.bodyContainer.appendChild(this.imgSrc, { x:e.offsetX, y:e.offsetY});
+                    this.bodyContainer.appendChildByJson({imgSrc: this.imgSrc, x:e.offsetX, y:e.offsetY});
                 }
             });
         },

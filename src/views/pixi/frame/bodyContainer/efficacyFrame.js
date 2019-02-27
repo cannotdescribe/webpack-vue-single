@@ -3,6 +3,10 @@ import PIXI_BASE_UTILS from "../../utils/PIXI_BASE_UTILS.js"
 import BunnyRotationPock from "./bunnyRotationPock.js"
 import BunnyResizeHandler from "./bunnyResizeHandler.js"
 
+const CONST = {
+    forword: 7
+}
+
 export default class EfficacyFrame{
     constructor(bodyContainer, app, plane, bunnyContainer, bunnySelectStore){
         this.bodyContainer = bodyContainer;
@@ -113,7 +117,12 @@ export default class EfficacyFrame{
 
             //
             // console.log("efficacyContainer:  ", this.efficacyContainer.position.x, this.efficacyContainer.position.y);
-            this.compose();
+            if(this.bodyContainer.options.transform){
+                _this.compose();
+            }else{
+                _this.moveCompose();
+            }
+            // this.compose();
             this.initEfficacyContainerPosition();
             // console.log(this.efficacyContainer.width, this.efficacyContainer.height, this.efficacyContainer.position.x, this.efficacyContainer.position.y);
 
@@ -223,7 +232,7 @@ export default class EfficacyFrame{
      * @param point
      * @returns {{a0: *, a1: *, a2: *, a3: *}}
      */
-    footPoint(a, b, rotation, state){
+    footPoint(a, b, rotation){
         let od, result;
         if(b.x-a.x === 0){
             od = Math.PI / 2;
@@ -299,7 +308,7 @@ export default class EfficacyFrame{
         let result = this.distributeDirection(points, rotation);
         let {leftTop, rightTop, rightBottom, leftBottom} = this.rectanglePoint(result, rotation);
 
-        console.log("----不需要看: ", {leftTop, rightTop, rightBottom, leftBottom});
+        // console.log("----不需要看: ", {leftTop, rightTop, rightBottom, leftBottom});
 
         let centerPoint = {x: (leftTop.x+rightBottom.x)/2, y: (leftTop.y+rightBottom.y)/2};
 
@@ -385,7 +394,11 @@ export default class EfficacyFrame{
                     efficacyAnchorPosition.x = _this.efficacyContainer.position.x + _this.efficacyFrameInitSize.width/2;
                     efficacyAnchorPosition.y = _this.efficacyContainer.position.y;
                 }
-                efficacyAnchor = PIXI_BASE_UTILS.rotationPoint(efficacyAnchorPosition, _this.efficacyContainer.position, _this.efficacyContainer.rotation);
+                efficacyAnchor = PIXI_BASE_UTILS.rotationPoint(efficacyAnchorPosition, _this.efficacyContainer.position, _this.efficacyContainer.rotation, _this.btnState);
+
+                //TODO efficacyAnchor 需要重新写
+                // efficacyAnchor = PIXI_BASE_UTILS.rotationBunnyPoint(bunny, _this.efficacyContainer, _this.btnState);
+                
                 PIXI_BASE_UTILS.bunnySetNewAnchorPosition(bunny, efficacyAnchor);
             });
 
@@ -491,6 +504,58 @@ export default class EfficacyFrame{
         this.efficacyContainer.initSizeAndPosition.x = this.efficacyContainer.position.x;
         this.efficacyContainer.initSizeAndPosition.y = this.efficacyContainer.position.y;
     }
+
+    //移动组成， 这个是为了移动组成用的。
+    moveCompose(selectBunny){
+        let _this = this;
+
+        this.clearEfficacy();
+
+        let lastBunny = {
+            rotation: 0
+        }
+        if(selectBunny){
+            lastBunny = selectBunny;
+        }else{
+            if(this.bunnySelectStore.length > 0){
+                lastBunny = this.bunnySelectStore[this.bunnySelectStore.length-1];
+            }
+        }
+
+        let {top, right, bottom, left} = this.efficacyMaxSize(_this.bunnySelectStore, lastBunny.rotation);
+
+        this.efficacyFrameSize.width = Math.abs(right - left);
+        this.efficacyFrameSize.height = Math.abs(bottom - top);
+
+        this.efficacyContainer.pivot.x = this.efficacyFrameSize.width/2;
+        this.efficacyContainer.pivot.y = this.efficacyFrameSize.height/2;
+
+        //TODO 这里有东西要写
+
+        let graphics = new PIXI.Graphics();
+        // graphics.beginFill(0xFFFFFF, 0);
+        graphics.lineStyle(4, 0x1240AB, 1);
+        // graphics.drawRect(-this.efficacyFrameSize.width/2-15, -this.efficacyFrameSize.height/2-15, this.efficacyFrameSize.width+15, this.efficacyFrameSize.height+15);
+        graphics.drawRect(-this.efficacyFrameSize.width/2, -this.efficacyFrameSize.height/2, this.efficacyFrameSize.width, this.efficacyFrameSize.height);
+        graphics.endFill();
+
+        graphics.pivot.x = -graphics.width / 2;
+        graphics.pivot.y = -graphics.height / 2;
+
+        // graphics.position.x = x;
+        // graphics.position.y = y;
+        graphics.interactive = true;
+        this.efficacyContainer.addChild(graphics);
+
+        this.efficacyContainer.position.x = (right+left)/2;
+        this.efficacyContainer.position.y = (top+bottom)/2;
+
+        this.efficacyContainer.rotation = lastBunny.rotation===undefined ?0:lastBunny.rotation;
+
+        this.efficacyFrameInitSize.width = this.efficacyFrameSize.width;
+        this.efficacyFrameInitSize.height = this.efficacyFrameSize.height;
+    }
+
     /**
      * 入口:
      *  所选的bunnys在这里进行初始化工作。
@@ -523,27 +588,26 @@ export default class EfficacyFrame{
         this.efficacyContainer.pivot.x = this.efficacyFrameSize.width/2 +10;
         this.efficacyContainer.pivot.y = this.efficacyFrameSize.height/2 +10;
 
-       //TODO
+        //TODO
         /**
          * 这里的顺序不能乱来，通常情况下，我们是看下标的来判断是属于哪个按钮
          * @type {[null,null,null,null,null,null,null,null,null,null,null,null,null]}
          */
-        let forword = 7;
         this.squaresEfficacy.splice(0, this.squaresEfficacy.length);
-        this.squaresEfficacy[0] = this.createSquare(15 - forword, 15 - forword, "leftTop");
-        this.squaresEfficacy[1] = this.createSquare(15+this.efficacyFrameSize.width/2, 15 -forword, "centerTop");
-        this.squaresEfficacy[2] = this.createSquare(15+this.efficacyFrameSize.width + forword, 15 - forword, "rightTop");
-        this.squaresEfficacy[3] = this.createSquare(15+this.efficacyFrameSize.width + forword, 15+this.efficacyFrameSize.height/2, "rightCenter");
-        this.squaresEfficacy[4] = this.createSquare(15+this.efficacyFrameSize.width + forword, 15+this.efficacyFrameSize.height + forword, "rightBottom");
-        this.squaresEfficacy[5] = this.createSquare(15+this.efficacyFrameSize.width/2, 15+this.efficacyFrameSize.height + forword, "centerBottom");
-        this.squaresEfficacy[6] = this.createSquare(15 - forword, 15+this.efficacyFrameSize.height + forword, "leftBottom");
-        this.squaresEfficacy[7] = this.createSquare(15 - forword, 15+this.efficacyFrameSize.height/2, "leftCenter");
+        this.squaresEfficacy[0] = this.createSquare(15 - CONST.forword, 15 - CONST.forword, "leftTop");
+        this.squaresEfficacy[1] = this.createSquare(15+this.efficacyFrameSize.width/2, 15 - CONST.forword, "centerTop");
+        this.squaresEfficacy[2] = this.createSquare(15+this.efficacyFrameSize.width + CONST.forword, 15 - CONST.forword, "rightTop");
+        this.squaresEfficacy[3] = this.createSquare(15+this.efficacyFrameSize.width + CONST.forword, 15+this.efficacyFrameSize.height/2, "rightCenter");
+        this.squaresEfficacy[4] = this.createSquare(15+this.efficacyFrameSize.width + CONST.forword, 15+this.efficacyFrameSize.height + CONST.forword, "rightBottom");
+        this.squaresEfficacy[5] = this.createSquare(15+this.efficacyFrameSize.width/2, 15+this.efficacyFrameSize.height + CONST.forword, "centerBottom");
+        this.squaresEfficacy[6] = this.createSquare(15 - CONST.forword, 15+this.efficacyFrameSize.height + CONST.forword, "leftBottom");
+        this.squaresEfficacy[7] = this.createSquare(15 - CONST.forword, 15+this.efficacyFrameSize.height/2, "leftCenter");
 
-        this.squaresEfficacy[8] = this.createCircle(this.efficacyFrameSize.width/2+17, - forword, "rotation");
-        this.squaresEfficacy[9] = this.createSquare(- forword, - forword);
-        this.squaresEfficacy[10] = this.createSquare(this.efficacyFrameSize.width+30 + forword, - forword);
-        this.squaresEfficacy[11] = this.createRemove(this.efficacyFrameSize.width+30 + forword, this.efficacyFrameSize.height+30 + forword);
-        this.squaresEfficacy[12] = this.createSquare(- forword, this.efficacyFrameSize.height+30 + forword);
+        this.squaresEfficacy[8] = this.createCircle(this.efficacyFrameSize.width/2+17, - CONST.forword, "rotation");
+        this.squaresEfficacy[9] = this.createSquare(- CONST.forword, - CONST.forword);
+        this.squaresEfficacy[10] = this.createSquare(this.efficacyFrameSize.width+30 + CONST.forword, - CONST.forword);
+        this.squaresEfficacy[11] = this.createRemove(this.efficacyFrameSize.width+30 + CONST.forword, this.efficacyFrameSize.height+30 + CONST.forword);
+        this.squaresEfficacy[12] = this.createSquare(- CONST.forword, this.efficacyFrameSize.height+30 + CONST.forword);
 
         //为efficacyFrame形态变化做好数据初始化
         this.squaresEfficacy.forEach(s=>{this.efficacyContainer.addChild(s)});

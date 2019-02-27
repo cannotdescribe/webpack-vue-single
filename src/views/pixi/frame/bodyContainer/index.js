@@ -3,6 +3,9 @@ import * as PIXI from 'pixi.js'
 import EfficacyFrame from "./efficacyFrame.js"
 import PIXI_BASE_UTILS from "../../utils/PIXI_BASE_UTILS.js"
 
+import Bunny from "./member/Bunny.js"
+import BunnyGroup from "./member/BunnyGroup.js"
+
 /**
  * 目前不集成ctrl功能，这个功能还未开发完成，下版本想办法修复
  * 
@@ -17,9 +20,12 @@ import PIXI_BASE_UTILS from "../../utils/PIXI_BASE_UTILS.js"
 export default class BodyContainer{
     constructor(el, options){
         this.$el = el;
+        this.Bunny = Bunny;
+        this.BunnyGroup = BunnyGroup;
         this.app = {};
         this.groups =[];
-        this.options = options;
+        this.options = {};
+        this.__initOption(options);
         this.bunnyContainer = {};
         this.plane = {};
         this.isCtrlDown = false;
@@ -104,6 +110,15 @@ export default class BodyContainer{
         this.efficacyFrame._initEfficacy();
 
     }
+    //初始化options
+    __initOption(options){
+        if(options.transform === false){
+            this.options.transform = false;
+        }else{
+            this.options = true;
+        }
+        this.options.background = options.background;
+    }
     executeHandler(eventName, ...args){
         for(let mouseoverHandler of this.eventHandler[eventName]){
             mouseoverHandler.apply(this, args)
@@ -115,16 +130,26 @@ export default class BodyContainer{
     setBackground(background){
         this.__planeTexture.baseTexture = PIXI.BaseTexture.fromImage(background);
     }
-    appendChild(imageUrl, options){
-        let bunny = this.nodeSpriteChange({imgSrc: imageUrl, x:options.x, y:options.y});
-        this.bunnyContainer.addChild(bunny);
 
-        bunny.initSizeAndPosition = {};
-        bunny.initSizeAndPosition.width = bunny.width;
-        bunny.initSizeAndPosition.height = bunny.height;
-        bunny.rotation = 0;
-        bunny.initRotation = 0;
+    appendChild(bean){
+        if(bean instanceof this.Bunny){
+            let bunny = this.nodeSpriteChange(bean);
+            this.bunnyContainer.addChild(bunny);
+            bunny.initSizeAndPosition = {};
+            bunny.initSizeAndPosition.width = bunny.width;
+            bunny.initSizeAndPosition.height = bunny.height;
+            bunny.rotation = 0;
+            bunny.initRotation = 0;
+        }else if(bean instanceof this.BunnyGroup){
+            
+        }
     }
+
+    appendChildByJson(options){
+        
+        this.appendChild(new this.Bunny(options));
+    }
+
     destroy(){
         this.app.view.removeEventListener("mouseover", this.mouseover);
         this.app.view.removeEventListener("mouseup", this.mouseup);
@@ -195,7 +220,7 @@ export default class BodyContainer{
         bunny.y = y;
 
         function onDragStart(event) {
-
+            console.log("onDragStart");
             _this.mouseEvent.initX = event.data.originalEvent.screenX;
             _this.mouseEvent.initY = event.data.originalEvent.screenY;
 
@@ -225,8 +250,12 @@ export default class BodyContainer{
                     _this.clearBunnySelected();
                     _this.bunnySelectStore.push(bunny);
                 }
-
-                _this.efficacyFrame.compose(bunny);
+                if(_this.options.transform){
+                    _this.efficacyFrame.compose(bunny);
+                }else{
+                    _this.efficacyFrame.moveCompose(bunny);
+                }
+                
 
                 /**
                  * 表示该bunny已经被选中了
@@ -268,4 +297,5 @@ export default class BodyContainer{
     consoleFmt(){
         console.log(this.spriteDemo);
     }
+
 }

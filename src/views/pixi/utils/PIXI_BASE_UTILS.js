@@ -3,17 +3,38 @@ export default {
      * x0= (x - rx0)*cos(a) - (y - ry0)*sin(a) + rx0 ;
      * y0= (x - rx0)*sin(a) + (y - ry0)*cos(a) + ry0 ;
      * 参考: https://jingyan.baidu.com/article/2c8c281dfbf3dd0009252a7b.html
-     *
+     * 在平面中，一个点绕任意点旋转θ度后的点的坐标
+     * 
      * @param position {{x: *, y:*}} 点的初始位置
-     * @param origin {{x: *, y:*}} 点的旋转中心
-     * @param rotation int rad 点的旋转角度
+     * @param origin {{x: *, y:*}} efficacyContainer 点的旋转中心
+     * @param rotation int rad efficacyContainer 点的旋转角度
      * @returns {{x: *, y: *}} 结果
      */
-    rotationPoint(position, origin, rotation){
+    rotationPoint(position, origin, rotation, btnState){
         return {
             x: (position.x - origin.x) * Math.cos(rotation) - (position.y - origin.y) * Math.sin(rotation) + origin.x,
             y: (position.x - origin.x) * Math.sin(rotation) + (position.y - origin.y) * Math.cos(rotation) + origin.y
         }
+    },
+
+    rotationBunnyPoint(bunny, efficacyContainer, btnState){
+        let rotation = this.getRealRotation(bunny - efficacyContainer.rotation);
+
+        if(btnState.leftTop){
+            
+        }else if(btnState.centerTop){
+            
+        }
+        console.log(bunny, efficacyContainer);
+        
+        return {
+            // x: (position.x - origin.x) * Math.cos(rotation) - (position.y - origin.y) * Math.sin(rotation) + origin.x,
+            // y: (position.x - origin.x) * Math.sin(rotation) + (position.y - origin.y) * Math.cos(rotation) + origin.y
+        }
+    },
+
+    getRealRotation(rotation){
+        return (rotation%(2*Math.PI)<0)? (rotation%(2*Math.PI)+2*Math.PI) : (rotation%(2*Math.PI));
     },
 
     getMove(rotation, widthMove, heightMove){
@@ -23,31 +44,63 @@ export default {
         };
     },
 
-    getBunnySize(efficacyRotation, bunnyRotation, widthMove, heightMove, state){
+    getBunnySize(efficacyRotation, bunnyRotation, widthMove, heightMove, btnState, state){
         if(state === "c"){
             widthMove = 0;
         }else if(state === "r"){
             heightMove = 0;
         }
         let rotation = bunnyRotation - efficacyRotation, result = {};
+        console.log("rotation: ", rotation);
+
         if(rotation === 0){
             result = {
                 width: widthMove,
                 height: heightMove
             }
         }else{
+            
             let ro = (rotation%(2*Math.PI)<0)? (rotation%(2*Math.PI)+2*Math.PI) : (rotation%(2*Math.PI));
-            console.log("ro: ", ro, ro > Math.PI*7/4 || ro <= Math.PI/4);
-            if(ro > Math.PI*7/4 || ro <= Math.PI/4){
-                result.height = (-Math.sin(rotation) * widthMove + Math.cos(rotation) * heightMove);
-                result.width = widthMove;
-            }else if(ro > Math.PI/4 && ro <= Math.PI*3/4){
 
-            }else if(ro > Math.PI*3/4 && ro <= Math.PI*5/4){
+            if(btnState.leftTop){
+                console.log("leftTop: ", ro)
+                if(ro > Math.PI*7/4 || ro <= Math.PI/4){
+                    result.height = (-Math.sin(rotation) * widthMove + Math.cos(rotation) * heightMove);
+                    result.width = widthMove;
+                }else if(ro > Math.PI/4 && ro <= Math.PI*3/4){
+                    
+                }else if(ro > Math.PI*3/4 && ro <= Math.PI*5/4){
+    
+                }else if(ro > Math.PI*5/4 && ro <= Math.PI*7/4){
+    
+                }
+            }else if(btnState.centerTop){
+                console.log("centerTop: ", ro)
+                if(ro > Math.PI*7/4 || ro <= Math.PI/4){
+                    result.height = (-Math.sin(rotation) * widthMove + Math.cos(rotation) * heightMove);
+                    result.width = widthMove;
+                }else if(ro > Math.PI/4 && ro <= Math.PI*3/4){
+                    
+                }else if(ro > Math.PI*3/4 && ro <= Math.PI*5/4){
+    
+                }else if(ro > Math.PI*5/4 && ro <= Math.PI*7/4){
+    
+                }
+            }else if(btnState.rightTop){
 
-            }else if(ro > Math.PI*5/4 && ro <= Math.PI*7/4){
+            }else if(btnState.rightCenter){
+
+            }else if(btnState.rightBottom){
+
+            }else if(btnState.centerBottom){
+
+            }else if(btnState.leftBottom){
+
+            }else if(btnState.leftCenter){
 
             }
+
+            
 
             // if(0 < ro && ro <= Math.PI/2){
             //     if(0<ro && ro<= Math.PI/4){
@@ -184,6 +237,7 @@ export default {
     },
 
     bunnySetNewAnchorPosition(bunny, position){
+        console.log("position: ", position);
         this.bunnySetNewAnchor(bunny, this.efficacyGetAnchor(bunny, position));
     },
 
@@ -194,7 +248,9 @@ export default {
             bunny.position.x = bunny.position.x + bunny.width * Math.cos(bunny.rotation) - bunny.height * Math.sin(bunny.rotation);
             bunny.position.y = bunny.position.y + bunny.width * Math.sin(bunny.rotation) + bunny.height * Math.cos(bunny.rotation);
         */
+       
         let oldAnchor ={x: bunny.anchor.x, y: bunny.anchor.y};
+        // console.log("setNewAnchor: ", newAnchor, oldAnchor);
         bunny.anchor.set(newAnchor.x, newAnchor.y);
         bunny.position.x = bunny.position.x + (newAnchor.x - oldAnchor.x) * bunny.width * Math.cos(bunny.rotation) - (newAnchor.y - oldAnchor.y) * bunny.height * Math.sin(bunny.rotation);
         bunny.position.y = bunny.position.y + (newAnchor.x - oldAnchor.x) * bunny.width * Math.sin(bunny.rotation) + (newAnchor.y - oldAnchor.y) * bunny.height * Math.cos(bunny.rotation);

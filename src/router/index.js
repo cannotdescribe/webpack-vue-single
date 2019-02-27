@@ -221,6 +221,35 @@ export const asyncRouterMap = [
     },
 
     {
+        path: '/popper',
+        component: Layout,
+        redirect: '/popper/index',
+        childType: "none",
+        meta: {
+          title: "popper"
+        },
+        children: [
+          {
+            path: "index",
+            component: _import("popper/index"),
+            meta: {
+              title: "基础"
+            },
+            // redirect: '/pixi/base/rectangle',
+            // children:[
+            //   {
+            //     path: "rectangle",
+            //     component: _import("pixi/base/rectangle"),
+            //     meta: {
+            //       title: "矩形"
+            //     }
+            //   }
+            // ]
+          },
+        ]
+      },
+
+    {
         path: '/three',
         component: Layout,
         redirect: '/three/base',
