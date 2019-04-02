@@ -20,7 +20,7 @@
         mounted(){
             this.bodyContainer = new BodyContainer(this.$el, {
                 background: "/static/pixi/background.jpg",
-                transform: false
+                transform: true
             });
 
             // window.setTimeout(()=>{

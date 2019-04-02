@@ -1,0 +1,15 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg t="1528963891442" class="icon" style="" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="3047" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200">
+ <defs>
+  <style type="text/css"/>
+ </defs>
+ <g>
+  <title>background</title>
+  <rect fill="none" id="canvas_background" height="402" width="582" y="-1" x="-1"/>
+ </g>
+ <g>
+  <title>Layer 1</title>
+  <path id="svg_2" d="m899.327026,452.64209c6.781433,0 12.279663,5.497192 12.279663,12.279663l0,108.482727c0,6.781494 -5.49823,12.279663 -12.279663,12.279663l-780.782654,0c-6.781456,0 -12.279671,-5.498169 -12.279671,-12.279663l0.000015,-108.482697c0,-6.782471 5.49823,-12.279663 12.279686,-12.279663l780.782623,-0.000031z"/>
+ </g>
+</svg>

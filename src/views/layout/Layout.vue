@@ -1,20 +1,9 @@
 <template>
 
-    <el-container>
-        <el-header>
+    <el-container class="single-container">
+        <el-header class="single-header">
             <navbar></navbar>
         </el-header>
-        <!--<el-container>-->
-            <!--<el-aside style="overflow: hidden;">-->
-                <!--<sidebar class="sidebar-container"></sidebar>-->
-            <!--</el-aside>-->
-            <!--<el-container>-->
-                <!--<el-main>-->
-                    <!--<tags-view></tags-view>-->
-                    <!--<app-main></app-main>-->
-                <!--</el-main>-->
-            <!--</el-container>-->
-        <!--</el-container>-->
         <router-view></router-view>
     </el-container>
 
@@ -30,19 +19,19 @@ export default {
 }
 </script>
 
-<style rel="stylesheet/scss" lang="scss" scoped>
-  @import "src/styles/mixin.scss";
-
-  .el-header{
-      background-color: #B3C0D1;
-      color: #333;
-      /*text-align: center;*/
-      line-height: 60px;
-      margin:0;
-      padding:0;
-  }
-  .el-container{
-      height: 100%;
-      overflow: hidden;
-  }
+<style rel="stylesheet/scss" lang="scss">
+    @import "src/styles/mixin.scss";
+    .single-container{
+        .single-header{
+            background-color: #B3C0D1;
+            color: #333;
+            /*text-align: center;*/
+           
+            margin:0;
+            padding:0;
+        }
+        
+        overflow: hidden;
+        height: 100%;
+    }
 </style>

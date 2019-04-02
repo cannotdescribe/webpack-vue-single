@@ -115,7 +115,7 @@ export default class BodyContainer{
         if(options.transform === false){
             this.options.transform = false;
         }else{
-            this.options = true;
+            this.options.transform = true;
         }
         this.options.background = options.background;
     }

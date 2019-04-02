@@ -7,7 +7,7 @@ const count = 100;
 for(let i=0;i<count;i++){
     List.push(Mock.mock({
         id: '@increment',
-        username: '@word(6,8)',
+        username: '@word(4,20)',
         nickName: '@cname',
         loginCount: '@integer(5, 400)',
         lastLoginTime: '@datetime()',

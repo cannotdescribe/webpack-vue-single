@@ -75,9 +75,46 @@ export const asyncRouterMap = [
     //     ]
     // },
     {
+        path: '/charts',
+        component: Layout,
+        redirect: '/charts/simple',
+        meta: {
+            title: "图表"
+        },
+        childType: "none",
+        children: [
+            {
+                path: "simple",
+                component: deploy,
+                meta: {
+                    title: "简单图表"
+                },
+                redirect: '/charts/simple/demo01',
+                children:[
+                    {
+                        path: "demo01",
+                        component: _import("charts/simple/demo01"),
+                        meta: {
+                            title: "演示1"
+                        }
+                    },
+                    {
+                        path: "demo02",
+                        component: _import("charts/simple/demo02"),
+                        meta: {
+                            title: "演示2"
+                        }
+                    }
+                ]
+            }
+        ]
+ 
+    },
+    {
         path: '/example',
         component: Layout,
         redirect: '/example/demo01',
+        hidden: true,
         meta: {
             title: "测试"
         },

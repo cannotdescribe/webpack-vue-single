@@ -1,27 +1,29 @@
 <template>
-    <div class="configuration-page">
-        <div class="top-menu">
+    <el-container class="configuration-page">
+       
+        <div class="left-sidebar">
+            <siderbar-device :maskImg="maskImg" @pointerdown="pointerdownHandler" @pointerup="pointerupHandler" @pointermove="pointermoveHandler"></siderbar-device>
+        </div>
+        <div class="control-body">
+            <body-container :imgSrc="maskImg.imgSrc" ref="bodyContainerRef"></body-container>
+        </div>            
+
+        <!--
+        <div class="right-sidebar">
+            <el-input v-model="maskImg.rotation"></el-input>
+            <el-button @click="clickHandler">旋转</el-button>
+            <el-button @click="consoleHandler">获得</el-button>
 
         </div>
-        <div class="center-body">
-            <div class="left-sidebar">
-                <siderbar-device :maskImg="maskImg" @pointerdown="pointerdownHandler" @pointerup="pointerupHandler" @pointermove="pointermoveHandler"></siderbar-device>
-            </div>
-            <div class="control-body">
-                <body-container  ref="bodyContainerRef" :imgSrc="maskImg.imgSrc"></body-container>
-            </div>
-            <div class="right-sidebar">
-                <el-input v-model="maskImg.rotation"></el-input>
-                <el-button @click="clickHandler">旋转</el-button>
-                <el-button @click="consoleHandler">获得</el-button>
-            </div>
-        </div>
+        
+       
         <img ondragstart="return false"
              class="cover-node"
              :src="maskImg.imgSrc"
              v-if="maskImg.imgSrc&&maskImg.imgSrc !== ''"
              :style="{left: maskImg.coverLeft+'px', top: maskImg.coverTop+'px'}"/>
-    </div>
+        -->
+    </el-container>
 </template>
 <script>
     import SiderbarDevice from "./frame/siderbarDevice.vue"
@@ -69,31 +71,36 @@
     }
 </script>
 <style lang="scss">
+    @import "src/styles/mixin.scss";
     .configuration-page{
-        height: 100%
+        overflow: hidden;
     }
     .top-menu{
         height: 24px;
     }
-    .center-body{
+    .configuration-page{
         height: calc(100% - 24px);
+        display: flex;
+        flex-direction: row;
+
+        .left-sidebar, .control-body, .right-sidebar{
+            height:100%;
+            border: 1px solid black;
+        }
+        .left-sidebar{
+            width: 280px;
+            flex:initial;
+        }
+        .control-body{
+            flex-direction: column;
+            flex: 1;
+        }
+        .right-sidebar{
+            width: 300px;
+            right: 0;
+        }
     }
-    .left-sidebar, .control-body, .right-sidebar{
-        height:100%;
-        position: absolute;
-        border: 1px solid black;
-    }
-    .left-sidebar{
-        width: 280px;
-    }
-    .control-body{
-        width: calc(100% - 580px);
-        left: 280px;
-    }
-    .right-sidebar{
-        width: 300px;
-        right: 0;
-    }
+    
     .cover-node{
         position: absolute;
         pointer-events:none;

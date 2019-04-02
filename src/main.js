@@ -14,6 +14,7 @@ import 'element-ui/lib/theme-chalk/index.css'
 import '@/styles/index.scss'
 import './permission'
 import './mock'
+import './icons'
 
 Vue.use(Element, {
     size: 'medium' ,// set element-ui default size

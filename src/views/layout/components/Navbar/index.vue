@@ -1,40 +1,83 @@
 <template>
 
-    <el-menu  :default-active="activeIndex" router class="el-menu-demo" mode="horizontal" @select="handleSelect">
-        <LOGO></LOGO>
+    <div class="nav">
+        <div class="left-nav" ref="leftNav">
+            <!--<LOGO></LOGO> -->
+            
+            <span class="logo-title">{{logoTitle}}</span>
+            
+        </div>
 
-        <template v-for="(item, index) in navMenu">
-            <nav-item v-if="item.childType==='navigate'" :index="item.path" :item="item"></nav-item>
+        <div class="center-nav">
+            <el-menu  :default-active="activeIndex" router class="el-menu-demo" mode="horizontal" @select="handleSelect">
+                <template v-for="(item, index) in navMenu">
+                    <nav-item v-if="item.childType==='navigate'" :index="item.path" :item="item"></nav-item>
 
-            <el-menu-item v-else :index="item.path">{{item.meta.title}}</el-menu-item>
-        </template>
+                    <el-menu-item v-else :index="item.path">{{item.meta.title}}</el-menu-item>
+                </template>
+                
+            </el-menu>
+        </div>
 
-        <!--<el-menu-item index="1">监控</el-menu-item>-->
-        <!--<el-submenu index="2">-->
-            <!--<template slot="title">我的工作台</template>-->
-            <!--<el-menu-item index="2-1">选项1</el-menu-item>-->
-            <!--<el-menu-item index="2-2">选项2</el-menu-item>-->
-            <!--<el-menu-item index="2-3">选项3</el-menu-item>-->
-            <!--<el-submenu index="2-4">-->
-                <!--<template slot="title">选项4</template>-->
-                <!--<el-menu-item index="2-4-1">选项1</el-menu-item>-->
-                <!--<el-menu-item index="2-4-2">选项2</el-menu-item>-->
-                <!--<el-menu-item index="2-4-3">选项3</el-menu-item>-->
-            <!--</el-submenu>-->
-        <!--</el-submenu>-->
-        <!--<el-menu-item index="3" disabled>消息中心</el-menu-item>-->
-        <!--<el-menu-item index="4"><a target="_blank">订单管理</a></el-menu-item>-->
+        <div class="right-nav" ref="rightNav">
+            <right-menu @pwdClick="pwdClickHandler"></right-menu>
+        </div>
 
-        <right-menu></right-menu>
-    </el-menu>
+        <el-dialog
+            title="修改密码"
+            :visible.sync="pwdVisible"
+            width="30%"
+            :before-close="handleClose">
+            <el-form :model="formLabelAlign">
+                <el-form-item label="账号">
+                    <el-input v-model="formLabelAlign.name" :readonly="true"></el-input>
+                </el-form-item>
+                <el-form-item label="新密码">
+                    <el-input v-model="formLabelAlign.password"></el-input>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" @click="submitForm('ruleForm')">立即创建</el-button>
+                    <el-button @click="formLabelAlign.password=''">重置</el-button>
+                </el-form-item>
+            </el-form>
+        </el-dialog>
+    </div>
 
 </template>
-<style>
-    .el-menu{
-        /*box-sizing: border-box;*/
-    }
-    .el-menu-item{
-        /*width: 180px;*/
+<style rel="stylesheet/scss" lang="scss">
+    .nav{
+        display: flex;
+        flex-direction: row;
+        flex: 1;
+        flex-basis: auto;
+        height: 100%;
+
+        .left-nav, .center-nav, .right-nav{
+            flex-shrink: 0;
+            margin: 0;
+            padding: 0;
+            vertical-align: top;
+            box-sizing: border-box;
+        }
+
+        .left-nav{
+            vertical-align: middle;
+            margin: 0 20px;
+            // width: 300px;
+            .logo-title{
+                font-size: 20px;
+                color: #ffffff;
+                font-weight: bold;
+                line-height: 60px;
+            }
+        }
+        .center-nav{
+            flex-direction: column;
+            flex:1;
+        }
+        .right-nav{
+            flex: initial;
+        }
     }
 </style>
 <script>
@@ -52,13 +95,14 @@
         },
         data() {
             return {
-                activeIndex: '1'
+                activeIndex: '1',
+                logoTitle: "管理界面",
+                pwdVisible: false,
+                formLabelAlign:{
+                    name: "",
+                    region: ""
+                }
             };
-        },
-        methods: {
-            handleSelect(key, keyPath) {
-//                console.log(key, keyPath);
-            }
         },
         computed: {
             ...mapGetters([
@@ -68,6 +112,18 @@
             navMenu(){
 //                console.log(this.addRouters.filter(item=>!item.hidden));
                 return this.addRouters.filter(item=>!item.hidden)
+            }
+        },
+        methods: {
+            handleSelect(key, keyPath) {
+//                console.log(key, keyPath);
+            },
+            pwdClickHandler(userForm){
+                this.pwdVisible = true;
+                this.formLabelAlign = userForm;
+            },
+            handleClose(){
+                this.pwdVisible = false;
             }
         }
     }

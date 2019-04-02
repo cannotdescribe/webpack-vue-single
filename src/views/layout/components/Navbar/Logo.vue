@@ -1,17 +1,16 @@
 <template>
-    <div class="LOGO">logo</div>
+    <img class="logo" src="/static/images/logo.png"/>
 </template>
 
 <script>
-
     export default {
     }
 </script>
 
 <style>
-    .LOGO{
-        width: 200px;
-        background-color: #409EFF;
-        float: left;
+    .logo{
+        margin-left: 22px;
+        height: 36px;
+        margin-top: 10px;
     }
 </style>
